@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ML_Journey</title>
-</head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.3.4/p5.min.js"></script>
+    <script src="libraries/grafica.min.js"></script>
+  </head>
 <body>
+    Creating a walker class that marks random direction out of 9 options.
     <script>
+let walker;
 function setup(){
     createCanvas(640,250);
-    walker=new walker();
+    walker=new walk();
     background(255);
 }
 function draw(){
-    walker.step();
+    walker.follow();
     walker.show();
 }
-class walker{
+class walk{
     constructor(){
         this.x=width/2;
         this.y=height/2;
@@ -31,7 +35,35 @@ step(){
     this.x+=choicex;
     this.y+=choicey;
 }
+follow(){
+    let a=mouseX-this.x;
+    let b=mouseY-this.y;
+    let ran=floor(random(2));
+    let c,d;
+    if (ran===1){
+    if (a>0){
+        c=1;
+    }else if (a<0){
+        c=-1;
+    }else{c=0;}
+    if (b>0){
+        d=1;
+    }else if (b<0){
+        d=-1;
+    }else{d=0;}
+    this.x+=c;
+    this.y+=d;
 }
-    </script>
+else{
+    this.step();}}
+}
+</script>
+<br>Here is a walker which follows mouse 50 percent of the times.
+<script>
+    setup()
+    walker.show()
+    walker.follow()
+  
+</script>
 </body>
 </html>
