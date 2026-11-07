@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML_Journey</title>
+</head>
+<body>
+    <script>
+function setup(){
+    createCanvas(640,250);
+    walker=new walker();
+    background(255);
+}
+function draw(){
+    walker.step();
+    walker.show();
+}
+class walker{
+    constructor(){
+        this.x=width/2;
+        this.y=height/2;
+}
+show(){
+    stroke(0);
+    point(this.x,this.y);
+}
+step(){
+    let choicex= floor(random(3))-1;
+    let choicey= floor(random(3))-1;
+    this.x+=choicex;
+    this.y+=choicey;
+}
+}
+    </script>
+</body>
+</html>
