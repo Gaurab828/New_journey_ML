@@ -10,22 +10,55 @@
 <body>
     Creating a walker class that marks random direction out of 9 options.
     <script>
-let spreadSlider;
+/*let spreadSlider;
 let sizeSlider;
 let sizespSlider;
 let baseHueSlider;
 let huespSlider;
 let alphaSlider;
-//let walker;
+let walker;*/
+let randomCounts = [];
+
+function buttons(){
+    ran_walker=createButton("random_walker");
+    ran_walker.position(10,400);
+    ran_walker.mousePressed();
+}
+
 function setup(){
     createCanvas(640,250);
     //walker=new walk();
-    //background(255);
     colorMode(HSB);
     background(97);
-    createControls(300);
+    //createControls(300);
+    //buttons();
+    for (let i =0; i<20; i++){
+        randomCounts[i] = 0;
+    }
 }
 function draw(){
+    let index = int(acceptreject()*randomCounts.length);
+    randomCounts[index]++;
+
+    stroke(0);
+    strokeWeight(2);
+    fill(190);
+
+    let w = width /randomCounts.length;
+    for(let x = 0;x<randomCounts.length;x++){
+        rect(x * w,height - randomCounts[x],w -1,randomCounts[x]);
+    }
+}
+function acceptreject(){
+    while(true){
+        let r1=random(1);
+        let probability = r1;
+        let r2 = random(1);
+        if (r2>probability){
+            return r1;
+        }
+    }
+}
 //    walker.step();//for random walk
 //    walker.show();
 //    walker.follow();//for mouse follow
@@ -34,7 +67,7 @@ function draw(){
 //noStroke();
 //fill(0,10);
 //circle(x,120,18);
-translate(width/2,height/2);
+/*translate(width/2,height/2);
 scale(height/2);
 x = randomGaussian(0, spreadSlider.value());
 y = randomGaussian(0,spreadSlider.value());
@@ -131,8 +164,8 @@ function createControls(ypos){
 
 function clearButtonClicked(){
     background(97);
-}
-class walk{
+}*/
+/*class walk{
     constructor(){
         this.x=width/2;
         this.y=height/2;
@@ -146,6 +179,11 @@ step(){
     let choicey= floor(random(3))-1;
     this.x+=choicex;
     this.y+=choicey;
+
+//step(){let choicex=randomGaussian(0,3);
+//let choicey=randomGaussian(0,3);
+//this.x+=choicex;
+//this.y+=choicy;
 }
 follow(){
     let a=mouseX-this.x;
@@ -168,7 +206,8 @@ follow(){
 }
 else{
     this.step();}}
-}
+
+}*/
 </script>
 <br>Here is a walker which follows mouse 50 percent of the times.
 <br>using gaussian random to create circle pattern to see where most occupy.
