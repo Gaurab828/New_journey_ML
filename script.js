@@ -5,6 +5,8 @@ let baseHueSlider;
 let huespSlider;
 let alphaSlider;
 let walker;
+let land;
+let theta = 0.0;
 let randomCounts = [];
 let t = 0.0;
 let events=[1];
@@ -212,6 +214,20 @@ else if (events[3]===1){
 updatePixels();
 generatemarble=false;
 }}
+else if(generateterrain){
+   let c=createCanvas(640,240,WEBGL);
+    land = new terrain(20, 800, 400);
+    land.calculate();
+    Push();
+    translate(0,20,-200);
+    rotateX(PI /3);
+    rotateZ(theta);
+    land.render();
+    Pop();
+    theta += 0.0025;
+    generateterrain=false;
+}
+
 else if(events[4]===1)
 {translate(width/2,height/2);
 scale(height/2);
@@ -319,6 +335,7 @@ function createControls(ypos){
 
 function clearButtonClicked(){
     background(97);
+}
 function make2DArray(cols,rows){
     let arr = new Array(cols);
     for(let i =0;i<arr.length;i++){
@@ -329,9 +346,42 @@ function make2DArray(cols,rows){
 class terrain{
     constructor(scl,w,h){
         this.scl =scl;
-        
+        this.w=w;
+        this.h=h;
+        this.cols = floor(w/scl);
+        this.rows = floor(h/scl);
+        this.z = make2DArray(this.cols,this.rows);
+        this.zoff =0;
     }
-}
+calculate(){
+    let xoff =0;
+    for(let i=0;i<this.cols;i++){
+        let yoff = 0;
+        for (let j = 0; j < this.rows; j++){
+            this.z[i][j] = map(noise(xoff,yoff,this.zoff),0,1,-123,120);
+            yoff += 0.1;
+        }
+        xoff += 0.1;
+        }
+        this.zoff+=0.01;
+    }
+    render(){
+        for(let x =0;x<this.z.length-1;x++){
+            behinShape(QUAD_STRIP);
+            for (let y=0; y<this.z[x].length; y++ ){
+                stroke(0);
+                let currentElevation = this.z[x][y];
+                let currentShade = map(currentElevation,-120,120,0,255);
+                fill(currentShade, 255);
+                let xCoordinate =x*this.scl-this.w/2;
+                let yCoordinate =y*this.scl-this.h/2;
+                vertex(xCoordinate,yCoordinate, this.z[x][y]);
+                vertex(xCoordinate + this.scl, yCoordinate,this.z[x+1][y]);
+            }
+            endShape();
+            generateterrain=false;
+        }
+    }
 }
 class walk{
     constructor(){
