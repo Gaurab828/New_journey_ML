@@ -16,6 +16,7 @@ function set_rwalker(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[0]=1;
     slider();
 }
@@ -27,6 +28,7 @@ function set_follower(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[1]=1;
     slider();
 }
@@ -39,6 +41,7 @@ function setgausdis(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[2]=1;
     slider();
 }
@@ -51,6 +54,7 @@ function setgauswalker(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[3]=1;
     slider();
 }
@@ -62,6 +66,7 @@ function setdots(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[4]=1;
     slider();
 }
@@ -73,6 +78,7 @@ function setnoisegraph(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[5]=1;
     slider();
 }
@@ -84,6 +90,7 @@ function setnoisewalker(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[6]=1;
     slider();
 }
@@ -95,8 +102,35 @@ function setscarce(){
             events[i]=0;
         }
     }
+    clearButtonClicked();
     events[7]=1;
     slider();
+}
+const button_marble=document.getElementById("marble");
+button_marble.addEventListener('click',setmarble);
+function setmarble(){
+    for(let i=0;i<20;i++){
+        if (events[i]===1 && i!=8){
+            events[i]=0;
+        }
+    }
+    clearButtonClicked();
+    generatemarble=true;
+    events[8]=1;
+    slider();
+}
+const button_terrain=document.getElementById("terrain");
+button_terrain.addEventListener('click',setterrain);
+function setterrain(){
+    for(let i=0;i<20;i++){
+        if (events[i]===1 && i!=9){
+            events[i]=0;
+        }
+    }
+    clearButtonClicked();
+    events[9]=1;
+    slider();
+    generateterrain=true;
 }
 function slider(){
 if (events[4]===1){
@@ -105,11 +139,12 @@ if (events[4]===1){
     else{if (spreadSlider){Title.hide();clearButton.hide();spreadTitle.hide();spreadSlider.hide();sizeTitle.hide();sizeSlider.hide();sizespTitle.hide();sizespSlider.hide();baseHueTitle.hide();baseHueSlider.hide();huespTitle.hide();huespSlider.hide();alphaTitle.hide();alphaSlider.hide();}}}
 
 function setup(){
-    createCanvas(640,250);
+    let canvas=createCanvas(640,250);
+    canvas.parent("canvas_holder");
     walker=new walk();
     colorMode(HSB);
     background(97);
-    for (let i =0; i<20; i++){
+    for (let i =0; i<15; i++){
       randomCounts[i] = 0;}
     }
 function draw(){
@@ -160,7 +195,24 @@ circle(x,120,18);}
 else if (events[3]===1){
     walker.step_1();
     walker.show();
-}else if(events[4]===1)
+}else if(events[8]===1){
+    if (generatemarble){
+    loadPixels();
+
+    let xoff=0.0;
+    for(let x=0;x<width;x++){
+    let yoff=0.0;
+    for(let y=0;y<height;y++){
+    let bright=map(noise(xoff,yoff),0,1,0,255);
+    set(x,y,floor(bright));
+    yoff+=0.01;
+    }
+    xoff +=0.1;
+    }
+updatePixels();
+generatemarble=false;
+}}
+else if(events[4]===1)
 {translate(width/2,height/2);
 scale(height/2);
 let x = randomGaussian(0, spreadSlider.value());
@@ -267,6 +319,19 @@ function createControls(ypos){
 
 function clearButtonClicked(){
     background(97);
+function make2DArray(cols,rows){
+    let arr = new Array(cols);
+    for(let i =0;i<arr.length;i++){
+        arr[i] = new Array(rows);
+    }
+    return arr;
+}
+class terrain{
+    constructor(scl,w,h){
+        this.scl =scl;
+        
+    }
+}
 }
 class walk{
     constructor(){
