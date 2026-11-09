@@ -10,11 +10,13 @@ let theta = 0.0;
 let randomCounts = [];
 let t = 0.0;
 let events=[1];
-let yoffset=0;
+let yofset=5;
 let seed=5;
+let gentree;
 let debug = true;
 let flowfield;
 let vehicles=[];
+let flowFieldInitialized = false;
 const button_walker=document.getElementById("random_walker");
 button_walker.addEventListener('click',set_rwalker);
 function set_rwalker(){
@@ -126,19 +128,6 @@ function setmarble(){
     events[8]=1;
     slider();
 }
-const button_terrain=document.getElementById("terrain");
-button_terrain.addEventListener('click',setterrain);
-function setterrain(){
-    for(let i=0;i<20;i++){
-        if (events[i]===1 && i!=9){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[9]=1;
-    slider();
-    generateterrain=true;
-}
 const button_tree=document.getElementById("tree");
 button_tree.addEventListener('click',settree);
 function settree(){
@@ -146,13 +135,14 @@ function settree(){
          if(events[i]===1 && i!=10){
             events[i]=0;
          }
-    }
+    }newtreeButton=createButton('new tree');
+    newtreeButton.position(20,220);
+    newtreeButton.mousePressed(newtree);
     clearButtonClicked();
     events[10]=1;
     slider();
-    yoffset=random(1000);
 }
-const button_wind=document.getElementById("wind");
+/*const button_wind=document.getElementById("wind");
 button_wind.addEventListener('click',setwind);
 function setwind(){
     for(let i=0;i<20;i++){
@@ -161,14 +151,15 @@ function setwind(){
         }
     }
     clearButtonClicked();
-    events[11];
-    slider();
-}
+    events[11]=1;
+    slider();}*/
 function slider(){
 if (events[4]===1){
     if (!spreadSlider){createControls(300);}
     Title.show();clearButton.show();spreadTitle.show();spreadSlider.show();sizeTitle.show();sizeSlider.show();sizespTitle.show();sizespSlider.show();baseHueTitle.show();baseHueSlider.show();huespTitle.show();huespSlider.show();alphaTitle.show();alphaSlider.show();}
-    else{if (spreadSlider){Title.hide();clearButton.hide();spreadTitle.hide();spreadSlider.hide();sizeTitle.hide();sizeSlider.hide();sizespTitle.hide();sizespSlider.hide();baseHueTitle.hide();baseHueSlider.hide();huespTitle.hide();huespSlider.hide();alphaTitle.hide();alphaSlider.hide();}}}
+    else{if (spreadSlider){Title.hide();clearButton.hide();spreadTitle.hide();spreadSlider.hide();sizeTitle.hide();sizeSlider.hide();sizespTitle.hide();sizespSlider.hide();baseHueTitle.hide();baseHueSlider.hide();huespTitle.hide();huespSlider.hide();alphaTitle.hide();alphaSlider.hide();}}
+if (events[10]===1){if(!newtreeButton)newtreeButton.show();}
+else {if(newtreeButton)newtreeButton.hide();}}
 
 function setup(){
     let canvas=createCanvas(640,250);
@@ -176,6 +167,7 @@ function setup(){
     walker=new walk();
     colorMode(HSB);
     background(97);
+
     for (let i =0; i<15; i++){
       randomCounts[i] = 0;}
     }
@@ -222,7 +214,7 @@ else if (events[6]===1){
 else if (events[2]===1){
 let x = randomGaussian(320,80);//320 is average and 60 is deviation.//for gaussian random circles.
 noStroke();
-fill(0,10);
+fill(0,0,0,0.1);
 circle(x,120,18);}
 else if (events[3]===1){
     walker.step_1();
@@ -244,32 +236,21 @@ else if (events[3]===1){
 updatePixels();
 generatemarble=false;
 }}
-/*else if(generateterrain){
-   let c=createCanvas(640,240,WEBGL);
-    land = new terrain(20, 800, 400);
-    land.calculate();
-    Push();
-    translate(0,20,-200);
-    rotateX(PI /3);
-    rotateZ(theta);
-    land.render();
-    Pop();
-    theta += 0.0025;
-    generateterrain=false;
-}*/
 else if(events[10]===1){
-    fill(0);
-    stroke(0);
+    background(97);
     translate(width/2,height);
-    yoffset+=0.005;
+    yofset+=0.005;
     randomSeed(seed);
     branch(60,0);
+    gentree=false;
 }
 else if(events[11]===1){
+    if(!flowFieldInitialized){
     flowfield = new FlowField(20);
     for(let i=0; i<120;i++){
-        vehicles.push(new vechicle(random(width),random(height),random(2,5),random(0.1,0.5)));
+      vehicles.push(new vehicle(random(width),random(height),random(2,5),random(0.1,0.5)));
     }
+flowFieldInitialized=true;}
     if (debug) flowfield.display();
     for(let i=0;i<vehicles.length;i++){
         vehicles[i].follow(flowfield);
@@ -312,71 +293,75 @@ function acceptreject(){
             return r1;
         }
 }}
+function newtree(){
+yofset=random(1000);
+speed=millis();
+}
 function createControls(ypos){
     let xpos = 0;
     Title=createP("Paint Splatter Simulation");
-    Title.position(xpos, ypos - 50);
+    Title.position(xpos, ypos - 90);
     Title.style("font-size","14pt");
     Title.style("font-weight","bold");
     xpos += 220;
 
     clearButton = createButton("clear");
-    clearButton.position(xpos,ypos - 30);
+    clearButton.position(xpos,ypos - 70);
     clearButton.mousePressed(clearButtonClicked);
 
     xpos = 0;
     spreadTitle = createP("Spread");
-    spreadTitle.position(xpos,ypos);
+    spreadTitle.position(xpos,ypos-45);
     xpos += 50;
 
     spreadSlider = createSlider(0, 0.75, 0.25, 0);
-    spreadSlider.position(xpos, ypos+ 15);
+    spreadSlider.position(xpos, ypos- 30);
     spreadSlider.size(80);
     xpos += 100;
 
     sizeTitle = createP("size");
-    sizeTitle.position(xpos, ypos);
+    sizeTitle.position(xpos, ypos-45);
     xpos += 35;
 
     sizeSlider = createSlider(5, 50, 20, 0);
-    sizeSlider.position(xpos, ypos + 15);
+    sizeSlider.position(xpos, ypos - 30);
     sizeSlider.size(80);
     xpos += 100;
 
     sizespTitle = createP("Size Spread");
-    sizespTitle.position(xpos, ypos);
+    sizespTitle.position(xpos, ypos-45);
     xpos += 80;
 
     sizespSlider = createSlider(0,0.1,0.01,0);
-    sizespSlider.position(xpos, ypos + 15);
+    sizespSlider.position(xpos, ypos -30);
     sizespSlider.size(80);
     xpos += 100;
 
     xpos = 0;
     baseHueTitle = createP("Base Hue");
-    baseHueTitle.position(xpos, ypos + 15);
+    baseHueTitle.position(xpos, ypos - 15);
     xpos += 70;
 
     baseHueSlider = createSlider(0, 360, 250, 0);
-    baseHueSlider.position(xpos,ypos + 30);
+    baseHueSlider.position(xpos,ypos );
     baseHueSlider.size(80);
     xpos += 100;
 
     huespTitle = createP("Hue Spread");
-    huespTitle.position(xpos,ypos + 15);
+    huespTitle.position(xpos,ypos - 15);
     xpos+=80;
 
     huespSlider = createSlider(0,100,15,0);
-    huespSlider.position(xpos, ypos + 30);
+    huespSlider.position(xpos, ypos );
     huespSlider.size(80);
     xpos += 100;
 
     alphaTitle = createP("Transparency");
-    alphaTitle.position(xpos,ypos + 15);
+    alphaTitle.position(xpos,ypos - 15);
     xpos += 90;
 
     alphaSlider = createSlider(0, 1, 0.75, 0);
-    alphaSlider.position(xpos,ypos + 30);
+    alphaSlider.position(xpos,ypos );
     alphaSlider.size(80);
     xpos += 100;
 }
@@ -394,9 +379,9 @@ xoff +=0.1;
 if(h>4){
     let n =floor(random(1,5));
     for(let i = 0; i<n;i++)
-    {let theta=map(noise(xoff+i,yoffset),0,1,-PI/2,PI/2);
+    {let theta=(noise(xoff+i,yofset)-0.5)*PI;
         if (n%2 == 0) theta*= -1;
-        Push();
+        push();
         rotate(theta);
         branch(h, xoff);
         pop(); 
@@ -404,18 +389,18 @@ if(h>4){
 }
 }
 function make2DArray(cols,rows){
-    let arr = new Array(cols);
-    for(let i =0;i<arr.length;i++){
-        arr[i] = new Array(rows);
+    let array = new Array(cols);
+    for(let i =0;i<array.length;i++){
+        array[i] = new Array(rows);
     }
-    return arr;
+    return array;
 }
 class FlowField{
     constructor(r){
         this.resolution = r;
         this.cols = width / this.resolution;
         this.rows = height / this.resolution;
-        this.field =make2Darry(this.cols,this.rows);
+        this.field =make2DArray(this.cols,this.rows);
         this.init();
     }
 init(){
@@ -425,7 +410,7 @@ init(){
         let yoff =0;
         for(let j =0;j<this.rows;j++){
             let angle =map(noise(xoff,yoff),0,1,0,TWO_PI);
-            this.field[i][j]=p5.Vector.fromAnge(angle);
+            this.field[i][j]=p5.Vector.fromAngle(angle);
             yoff += 0.1;
         }
         xoff += 0.1;
@@ -441,7 +426,7 @@ display(){
 }
 lookup(lookup){
     let column = constrain(floor(lookup.x / this.resolution),0,this.cols-1);
-    let row = constrains(floor(lookup.y / this.resolution), 0,this.rows -1);
+    let row = constrain(floor(lookup.y / this.resolution), 0,this.rows -1);
     return this.field[column][row].copy();
 }
 }
@@ -455,10 +440,9 @@ function drawVector(v,x,y,scayl){
     let len = v.mag()*scayl;
     line(0,0,len,0);
     line(len,0,len-arrowsize,+arrowsize/2);
-    line(len,0,len-arrowsize,-arrowsize/2);
     pop();
 }
-class Vehicle{
+class vehicle{
     constructor(x,y,ms,mf){
         this.position = createVector(x,y);
         this.acceleration = createVector(0,0);
@@ -495,60 +479,20 @@ borders(){
     if(this.position.y>height+this.r) this.position.y = - this.r;
 }
 display(){
-    let theta = this.velocity.heading()+PI/2;
+    let t = this.velocity.heading()+PI/2;
     fill(127);
     stroke(0);
-    strokeweight(2);
+    strokeWeight(2);
     push();
     translate(this.position.x,this.position.y);
-    rotate(theta);
+    rotate(t);
     beginShape();
     vertex(0, -this.r*2);
     vertex(-this.r,this.r*2);
-    vertex(this.r, this,r*2);
+    vertex(this.r, this.r*2);
     endShape(CLOSE);
     pop();
 }
-}
-class terrain{
-    constructor(scl,w,h){
-        this.scl =scl;
-        this.w=w;
-        this.h=h;
-        this.cols = floor(w/scl);
-        this.rows = floor(h/scl);
-        this.z = make2DArray(this.cols,this.rows);
-        this.zoff =0;
-    }
-calculate(){
-    let xoff =0;
-    for(let i=0;i<this.cols;i++){
-        let yoff = 0;
-        for (let j = 0; j < this.rows; j++){
-            this.z[i][j] = map(noise(xoff,yoff,this.zoff),0,1,-123,120);
-            yoff += 0.1;
-        }
-        xoff += 0.1;
-        }
-        this.zoff+=0.01;
-    }
-    render(){
-        for(let x =0;x<this.z.length-1;x++){
-            behinShape(QUAD_STRIP);
-            for (let y=0; y<this.z[x].length; y++ ){
-                stroke(0);
-                let currentElevation = this.z[x][y];
-                let currentShade = map(currentElevation,-120,120,0,255);
-                fill(currentShade, 255);
-                let xCoordinate =x*this.scl-this.w/2;
-                let yCoordinate =y*this.scl-this.h/2;
-                vertex(xCoordinate,yCoordinate, this.z[x][y]);
-                vertex(xCoordinate + this.scl, yCoordinate,this.z[x+1][y]);
-            }
-            endShape();
-            generateterrain=false;
-        }
-    }
 }
 class walk{
     constructor(){
@@ -556,7 +500,6 @@ class walk{
         this.y=height/2;
         this.tx =0;
         this.ty=10000;
-
 }
 show(){
     stroke(0);
