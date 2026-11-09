@@ -12,6 +12,9 @@ let t = 0.0;
 let events=[1];
 let yoffset=0;
 let seed=5;
+let debug = true;
+let flowfield;
+let vehicles=[];
 const button_walker=document.getElementById("random_walker");
 button_walker.addEventListener('click',set_rwalker);
 function set_rwalker(){
@@ -149,6 +152,18 @@ function settree(){
     slider();
     yoffset=random(1000);
 }
+const button_wind=document.getElementById("wind");
+button_wind.addEventListener('click',setwind);
+function setwind(){
+    for(let i=0;i<20;i++){
+        if(events[i]===0 && i!=11){
+            events[i]=0;
+        }
+    }
+    clearButtonClicked();
+    events[11];
+    slider();
+}
 function slider(){
 if (events[4]===1){
     if (!spreadSlider){createControls(300);}
@@ -250,7 +265,17 @@ else if(events[10]===1){
     randomSeed(seed);
     branch(60,0);
 }
-
+else if(events[11]===1){
+    flowfield = new FlowField(20);
+    for(let i=0; i<120;i++){
+        vehicles.push(new vechicle(random(width),random(height),random(2,5),random(0.1,0.5)));
+    }
+    if (debug) flowfield.display();
+    for(let i=0;i<vehicles.length;i++){
+        vehicles[i].follow(flowfield);
+        vehicles[i].run();
+    }
+}
 else if(events[4]===1)
 {translate(width/2,height/2);
 scale(height/2);
@@ -415,7 +440,74 @@ display(){
     }
 }
 lookup(lookup){
-    let column = constrain
+    let column = constrain(floor(lookup.x / this.resolution),0,this.cols-1);
+    let row = constrains(floor(lookup.y / this.resolution), 0,this.rows -1);
+    return this.field[column][row].copy();
+}
+}
+function drawVector(v,x,y,scayl){
+    push();
+    let arrowsize = 4;
+    translate(x,y);
+    strokeWeight(1);
+    stroke(127);
+    rotate(v.heading());
+    let len = v.mag()*scayl;
+    line(0,0,len,0);
+    line(len,0,len-arrowsize,+arrowsize/2);
+    line(len,0,len-arrowsize,-arrowsize/2);
+    pop();
+}
+class Vehicle{
+    constructor(x,y,ms,mf){
+        this.position = createVector(x,y);
+        this.acceleration = createVector(0,0);
+        this.velocity = createVector(0,0);
+        this.r =4;
+        this.maxspeed =ms || 4;
+        this.maxforce =mf || 0.1;
+    }
+run(){
+    this.update();
+    this.borders();
+    this.display();
+}
+follow(flow){
+    let desired =flow.lookup(this.position);
+    desired.mult(this.maxspeed);
+    let steer =p5.Vector.sub(desired,this.velocity);
+    steer.limit(this.maxforce);
+    this.applyForce(steer);
+}
+applyForce(force){
+    this.acceleration.add(force);
+}
+update(){
+    this.velocity.add(this.acceleration);
+    this.velocity.limit(this.maxspeed);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+}
+borders(){
+    if (this.position.x<-this.r) this.position.x=width+this.r;
+    if(this.position.y<-this.r) this.position.y=height +this.r;
+    if(this.position.x> width +this.r) this.position.x =-this.r;
+    if(this.position.y>height+this.r) this.position.y = - this.r;
+}
+display(){
+    let theta = this.velocity.heading()+PI/2;
+    fill(127);
+    stroke(0);
+    strokeweight(2);
+    push();
+    translate(this.position.x,this.position.y);
+    rotate(theta);
+    beginShape();
+    vertex(0, -this.r*2);
+    vertex(-this.r,this.r*2);
+    vertex(this.r, this,r*2);
+    endShape(CLOSE);
+    pop();
 }
 }
 class terrain{
