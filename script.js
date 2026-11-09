@@ -10,6 +10,8 @@ let theta = 0.0;
 let randomCounts = [];
 let t = 0.0;
 let events=[1];
+let yoffset=0;
+let seed=5;
 const button_walker=document.getElementById("random_walker");
 button_walker.addEventListener('click',set_rwalker);
 function set_rwalker(){
@@ -134,6 +136,19 @@ function setterrain(){
     slider();
     generateterrain=true;
 }
+const button_tree=document.getElementById("tree");
+button_tree.addEventListener('click',settree);
+function settree(){
+    for(let i=0;i<20;i++){
+         if(events[i]===1 && i!=10){
+            events[i]=0;
+         }
+    }
+    clearButtonClicked();
+    events[10]=1;
+    slider();
+    yoffset=random(1000);
+}
 function slider(){
 if (events[4]===1){
     if (!spreadSlider){createControls(300);}
@@ -214,7 +229,7 @@ else if (events[3]===1){
 updatePixels();
 generatemarble=false;
 }}
-else if(generateterrain){
+/*else if(generateterrain){
    let c=createCanvas(640,240,WEBGL);
     land = new terrain(20, 800, 400);
     land.calculate();
@@ -226,6 +241,14 @@ else if(generateterrain){
     Pop();
     theta += 0.0025;
     generateterrain=false;
+}*/
+else if(events[10]===1){
+    fill(0);
+    stroke(0);
+    translate(width/2,height);
+    yoffset+=0.005;
+    randomSeed(seed);
+    branch(60,0);
 }
 
 else if(events[4]===1)
@@ -336,12 +359,64 @@ function createControls(ypos){
 function clearButtonClicked(){
     background(97);
 }
+function branch(h,xoff){
+let sw = map(h,2,100,1,5 );
+strokeWeight(sw);
+line(0,0,0,-h);
+translate(0,-h);
+h*=0.7;
+xoff +=0.1;
+if(h>4){
+    let n =floor(random(1,5));
+    for(let i = 0; i<n;i++)
+    {let theta=map(noise(xoff+i,yoffset),0,1,-PI/2,PI/2);
+        if (n%2 == 0) theta*= -1;
+        Push();
+        rotate(theta);
+        branch(h, xoff);
+        pop(); 
+    }
+}
+}
 function make2DArray(cols,rows){
     let arr = new Array(cols);
     for(let i =0;i<arr.length;i++){
         arr[i] = new Array(rows);
     }
     return arr;
+}
+class FlowField{
+    constructor(r){
+        this.resolution = r;
+        this.cols = width / this.resolution;
+        this.rows = height / this.resolution;
+        this.field =make2Darry(this.cols,this.rows);
+        this.init();
+    }
+init(){
+    noiseSeed(random(10000));
+    let xoff =0;
+    for(let i=0;i< this.cols;i++){
+        let yoff =0;
+        for(let j =0;j<this.rows;j++){
+            let angle =map(noise(xoff,yoff),0,1,0,TWO_PI);
+            this.field[i][j]=p5.Vector.fromAnge(angle);
+            yoff += 0.1;
+        }
+        xoff += 0.1;
+    }
+}
+display(){
+    for(let i =0;i< this.cols; i++){
+        for(let j =0;j< this.rows; j++){
+            drawVector(this.field[i][j], i* this.resolution,j*this.resolution,
+                this.resolution-2);
+        }
+    }
+}
+lookup(lookup){
+    let column = constrain
+}
 }
 class terrain{
     constructor(scl,w,h){
