@@ -1,22 +1,4 @@
-let spreadSlider;
-let sizeSlider;
-let sizespSlider;
-let baseHueSlider;
-let huespSlider;
-let alphaSlider;
-let walker;
-let land;
-let theta = 0.0;
-let randomCounts = [];
-let t = 0.0;
-let events=[1];
-let yofset=5;
-let seed=5;
-let gentree;
-let debug = true;
-let flowfield;
-let vehicles=[];
-let flowFieldInitialized = false;
+let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlider;let alphaSlider;let walker;let land;let theta = 0.0;let randomCounts = [];let t = 0.0;let events=[1];let yofset=5;let seed=5;let gentree;let debug = true;let flowfield;let vehicles=[];let flowFieldInitialized = false;
 const button_walker=document.getElementById("random_walker");
 button_walker.addEventListener('click',set_rwalker);
 function set_rwalker(){
@@ -142,17 +124,6 @@ function settree(){
     events[10]=1;
     slider();
 }
-/*const button_wind=document.getElementById("wind");
-button_wind.addEventListener('click',setwind);
-function setwind(){
-    for(let i=0;i<20;i++){
-        if(events[i]===0 && i!=11){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[11]=1;
-    slider();}*/
 function slider(){
 if (events[4]===1){
     if (!spreadSlider){createControls(300);}
@@ -162,12 +133,10 @@ if (events[10]===1){if(!newtreeButton)newtreeButton.show();}
 else {if(newtreeButton)newtreeButton.hide();}}
 
 function setup(){
-    let canvas=createCanvas(640,250);
-    canvas.parent("canvas_holder");
+    createCanvas(640,250);
     walker=new walk();
     colorMode(HSB);
     background(97);
-
     for (let i =0; i<15; i++){
       randomCounts[i] = 0;}
     }
@@ -542,3 +511,14 @@ follow(){
     this.y+=d;
     }else
         {this.step();}}}
+        /*const button_wind=document.getElementById("wind");
+button_wind.addEventListener('click',setwind);
+function setwind(){
+    for(let i=0;i<20;i++){
+        if(events[i]===0 && i!=11){
+            events[i]=0;
+        }
+    }
+    clearButtonClicked();
+    events[11]=1;
+    slider();}*/
