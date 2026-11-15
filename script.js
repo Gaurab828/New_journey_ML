@@ -529,14 +529,24 @@ function setwind(){
     const vmode={
         ball:1,
         vectorsub:2,
-        func:3
+        func:3,
+        acceleration:4
     };
     let position;
     let velocity;
+    let acceleration;
     function setMode(index){
         vevents.fill(0);
         vevents[index] = 1;
         if (lvector) lvector.background(255);
+        if(index===1){
+            position.set(100,100);
+            velocity.set(3,2);
+        }
+        if(index===4){
+            acceleration.set(-0.01,0.01);
+            position.set(100,100);
+        }
     }
     for (const [id,index] of Object.entries(vmode)){
         document.getElementById(id).addEventListener('click',() => setMode(index));
@@ -545,8 +555,9 @@ function setwind(){
         p.setup = () => {
             p.createCanvas(640,250);
             p.background(255);
-            position=p.createVector(100,100);
-            velocity=p.createVector(3,2);
+            position=p.createVector(100,100); 
+            velocity=p.createVector(0,0);
+            acceleration=p.createVector(0,0);          
         };
     p.draw =() => {
         if (vevents[1]===1){
@@ -597,6 +608,24 @@ function setwind(){
             p.stroke(0);
             p.strokeWeight(8);
             p.line(0,0,mouse.x,mouse.y);
+        }
+        if(vevents[4]===1){
+        p.background(255);
+        velocity.add(acceleration);
+        position.add(velocity);
+        velocity.limit(10);
+        if(position.x>p.width-25 || position.x < 25){
+            velocity.x = velocity.x * -1;
+            acceleration.x = acceleration.x * -1;
+        }
+        if (position.y>p.height-25 || position.y<25){
+            velocity.y = velocity.y * -1;
+            acceleration.y = acceleration.y * -1;
+        }
+        p.stroke(0);
+        p.fill(99);
+        p.strokeWeight(2);
+        p.circle(position.x,position.y,48);
         }
     }; 
 }; 
