@@ -1,421 +1,295 @@
-/*let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlider;let alphaSlider;let walker;let land;let theta = 0.0;let randomCounts = [];let t = 0.0;let events=[1];let yofset=5;let seed=5;let gentree;
-const button_walker=document.getElementById("random_walker");
-button_walker.addEventListener('click',set_rwalker);
-function set_rwalker(){
-    for (let i=0;i<20;i++){
-        if (events[i]===1 && i!=0){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[0]=1;
-    slider();
-}
-const button_follower=document.getElementById("mouse_follow");
-button_follower.addEventListener('click',set_follower);
-function set_follower(){
-    for (let i=0;i<20;i++){
-        if (events[i]===1 && i!=1){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[1]=1;
-    slider();
-}
-const button_gausdis=document.getElementById("gaussian_dis");
-button_gausdis.addEventListener('click',setgausdis);
+let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlider;let alphaSlider;let walker;let land;let theta = 0.0;let randomCounts = [];let t = 0.0;let events=[1];let yofset=5;let seed=5;let gentree;
 
-function setgausdis(){
-    for(let i=0;i<20;i++){
-        if (events[i]===1 && i!=2){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[2]=1;
-    slider();
-}
-const button_gauswalker=document.getElementById("gaussian_walker");
-button_gauswalker.addEventListener('click',setgauswalker);
 
-function setgauswalker(){
-    for(let i=0;i<20;i++){
-        if (events[i]===1 && i!=3){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[3]=1;
-    slider();
-}
-const button_dots=document.getElementById("gaussian_dots");
-button_dots.addEventListener('click',setdots);
-function setdots(){
-    for(let i=0;i<20;i++){
-        if (events[i]===1 && i!=4){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[4]=1;
-    slider();
-}
-const button_noisegraph=document.getElementById("noise");
-button_noisegraph.addEventListener('click',setnoisegraph);
-function setnoisegraph(){
-    for(let i=0;i<20;i++){
-        if (events[i]===1 && i!=5){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[5]=1;
-    slider();
-}
-const button_noisewalker=document.getElementById("noise_walker");
-button_noisewalker.addEventListener('click',setnoisewalker);
-function setnoisewalker(){
-    for(let i=0;i<20;i++){
-        if (events[i]===1 && i!=6){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[6]=1;
-    slider();
-}
-const button_scarce=document.getElementById("scarce_random");
-button_scarce.addEventListener('click',setscarce);
-function setscarce(){
-    for(let i=0;i<20;i++){
-        if(events[i]===1 && i!=7){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    events[7]=1;
-    slider();
-}
-const button_marble=document.getElementById("marble");
-button_marble.addEventListener('click',setmarble);
-function setmarble(){
-    for(let i=0;i<20;i++){
-        if (events[i]===1 && i!=8){
-            events[i]=0;
-        }
-    }
-    clearButtonClicked();
-    generatemarble=true;
-    events[8]=1;
-    slider();
-}
-const button_tree=document.getElementById("tree");
-button_tree.addEventListener('click',settree);
-function settree(){
-    for(let i=0;i<20;i++){
-         if(events[i]===1 && i!=10){
-            events[i]=0;
-         }
-    }newtreeButton=createButton('new tree');
-    newtreeButton.position(20,220);
-    newtreeButton.mousePressed(newtree);
-    clearButtonClicked();
-    events[10]=1;
-    slider();
-}
-function slider(){
-if (events[4]===1){
-    if (!spreadSlider){createControls(300);}
-    Title.show();clearButton.show();spreadTitle.show();spreadSlider.show();sizeTitle.show();sizeSlider.show();sizespTitle.show();sizespSlider.show();baseHueTitle.show();baseHueSlider.show();huespTitle.show();huespSlider.show();alphaTitle.show();alphaSlider.show();}
-    else{if (spreadSlider){Title.hide();clearButton.hide();spreadTitle.hide();spreadSlider.hide();sizeTitle.hide();sizeSlider.hide();sizespTitle.hide();sizespSlider.hide();baseHueTitle.hide();baseHueSlider.hide();huespTitle.hide();huespSlider.hide();alphaTitle.hide();alphaSlider.hide();}}
-if (events[10]===1){if(gentree)newtreeButton.show();}
-else {if(!gentree)newtreeButton.hide();}}
-
-function setup(){
-    let canvas=createCanvas(640,250);
-    canvas.parent("canvas_holder");
-    walker=new walk();
-    colorMode(HSB);
-    background(97);
-    for (let i =0; i<15; i++){
-      randomCounts[i] = 0;}
-    }
-function draw(){
-    if (events[10]!=1) gentree=false;
-    if (events[0]===1){
-    walker.step();
-    walker.show();}
-    else if (events[5]===1){
-    background(97);
-    let xoff =t;
-    noFill();
-    stroke(0);
-    strokeWeight(2);
-    beginShape();
-    for (let i = 0;i<width;i++){
-        let y = noise(xoff) * height;
-        xoff += 0.01;
-        vertex(i,y);
-    }
-    endShape();
-    t += 0.01;}
-
-    else if (events[7]===1)
-    {let index = int(acceptreject()*randomCounts.length);
-    randomCounts[index]++;
-
-    stroke(0);
-    strokeWeight(2);
-    fill(190);
-
-    let w = width /randomCounts.length;
-    for(let x = 0;x<randomCounts.length;x++){
-        rect(x * w,height - randomCounts[x],w -1,randomCounts[x]);
-    }
-}
 //Lévy flight is a procedure where random big jumps are introduced to reduce oversampling or overlaping
-else if (events[1]===1){
-    walker.follow();//for mouse follow
-    walker.show();}
-else if (events[6]===1){
-    walker.step_2();
-    walker.show();
-}
-else if (events[2]===1){
-let x = randomGaussian(320,80);//320 is average and 60 is deviation.//for gaussian random circles.
-noStroke();
-fill(0,0,0,0.1);
-circle(x,120,18);}
-else if (events[3]===1){
-    walker.step_1();
-    walker.show();
-}else if(events[8]===1){
-    if (generatemarble){
-    loadPixels();
-
-    let xoff=0.0;
-    for(let x=0;x<width;x++){
-    let yoff=0.0;
-    for(let y=0;y<height;y++){
-    let bright=map(noise(xoff,yoff),0,1,0,255);
-    set(x,y,floor(bright));
-    yoff+=0.01;
+    let a;let tx=0;let ty=1000;
+    let revents=[];
+    const rmode={
+        random_walker:1,
+        mouse_follow:2,
+        gaussian_dis:3,
+        gaussian_walker:4,
+        gaussian_dots:5,
+        scarce_random:6,
+        noise_walker:7,
+        noise:8,
+        marble:9,
+        tree:10
+    };
+    for (const [id,index] of Object.entries(rmode)){
+        document.getElementById(id).addEventListener('click',() => setrmode(index));
     }
-    xoff +=0.1;
-    }
-updatePixels();
-generatemarble=false;
-}}
-else if(events[10]===1){
-    background(97);
-    translate(width/2,height);
-    yofset+=0.005;
-    randomSeed(seed);
-    branch(60,0);
-    gentree=true;
-}
-
-}
-else if(events[4]===1)
-{translate(width/2,height/2);
-scale(height/2);
-let x = randomGaussian(0, spreadSlider.value());
-let y = randomGaussian(0,spreadSlider.value());
-let size = randomGaussian(sizeSlider.value()/height,sizespSlider.value());
-if (size <=0){
-    size =0.01;
-}
-let paintHue = randomGaussian(baseHueSlider.value(),huespSlider.value());
-let paintSat = randomGaussian(80,20);
-let paintBright = randomGaussian(80,20);
-if (paintHue <0){
-    paintHue += 360;
-} else if (paintHue >= 360){
-    paintHue -=360;
-}
-if (paintSat > 100){
-    paintSat = 100;
-}
-if (paintBright > 100){
-    paintBright =100;
-}
-noStroke();
-fill(paintHue,paintSat,paintBright,alphaSlider.value());
-ellipse(x,y,size,size);
-}}
-function acceptreject(){
-    while(true){
-        let r1=random(1);
-        let probability = r1;
-        let r2 = random(1);
-        if (r2>probability){
-            return r1;
+    function setrmode(index){
+        revents.fill(0);
+        revents[index]=1;
+        if (lrandom){ lrandom.background(97);
+            lrandom.updateControls();
         }
-}}
-function newtree(){
-yofset=random(1000);
-speed=millis();
-}
-function createControls(ypos){
+        if(index===1 || index===2 || index ===4) {x=320; y=125;}
+        if(index===6) a=0;
+        if(index===9) generatemarble=true;
+        if(index===10) gentree=true;
+    }
+    const random = (r) =>{
+    if(revents[4]===1) slider();
+    r.setup = () =>{
+    r.createCanvas(640,250);
+    r.colorMode(r.HSB);
+    r.background(97);
+    for (let i =0; i<15; i++){
+        randomCounts[i] = 0;}
+    createControls(r,300);
+    r.updateControls();
+    };
+    r.updateControls = () =>{
+    if(revents[5]===1){
+    Title.show();clearButton.show();spreadTitle.show();spreadSlider.show();sizeTitle.show();sizeSlider.show();sizespTitle.show();sizespSlider.show();baseHueTitle.show();baseHueSlider.show();huespTitle.show();huespSlider.show();alphaTitle.show();alphaSlider.show();}
+    else{Title.hide();clearButton.hide();spreadTitle.hide();spreadSlider.hide();sizeTitle.hide();sizeSlider.hide();sizespTitle.hide();sizespSlider.hide();baseHueTitle.hide();baseHueSlider.hide();huespTitle.hide();huespSlider.hide();alphaTitle.hide();alphaSlider.hide();}
+    
+    if(revents[10]===1){
+        newtreebutton.show();
+    }else{newtreebutton.hide();}};
+
+    r.draw = () =>{
+        if (revents[1]===1){
+            let choicex= r.floor(r.random(7))-3;
+            let choicey= r.floor(r.random(7))-3;
+            x+=choicex;
+            y+=choicey;
+            r.stroke(0);
+            r.point(x,y);
+        }
+        if (revents[2]===1){
+        let a=r.mouseX-x;
+        let b=r.mouseY-y;
+        let ran=r.floor(r.random(100));
+        let c,d;
+        if (ran<44){
+        if (a>0){
+        c=3;
+        }else if (a<0){
+        c=-3;
+        }else{c=0;}
+        if (b>0){
+        d=3;
+        }else if (b<0){
+        d=-3;
+        }else{d=0;}
+        x+=c;
+        y+=d;
+        }else
+        {let choicex= r.floor(r.random(7))-3;
+        let choicey= r.floor(r.random(7))-3;
+            x+=choicex;
+            y+=choicey;}
+        r.stroke(0);
+        r.point(x,y);
+        }
+        if(revents[3]===1){
+            let x = r.randomGaussian(320,80);//320 is average and 60 is deviation.//for gaussian random circles.
+            r.noStroke();
+            r.fill(0,0,0,0.1);
+            r.circle(x,120,18);
+        }
+        if(revents[4]===1){
+            let choicex=r.randomGaussian(0,3);
+            let choicey=r.randomGaussian(0,3);
+            x+=choicex;
+            y+=choicey;
+            r.stroke(0);
+            r.point(x,y);
+        }
+        if(revents[5]===1){
+            r.translate(r.width/2,r.height/2);
+            r.scale(r.height/2);
+            let x = r.randomGaussian(0, spreadSlider.value());
+            let y = r.randomGaussian(0,spreadSlider.value());
+            let size = r.randomGaussian(sizeSlider.value()/r.height,sizespSlider.value());
+            if (size <=0){
+                size =0.01;
+            }
+            let paintHue = r.randomGaussian(baseHueSlider.value(),huespSlider.value());
+            let paintSat = r.randomGaussian(80,20);
+            let paintBright = r.randomGaussian(80,20);
+            if (paintHue <0){
+            paintHue += 360;
+            } else if (paintHue >= 360){
+            paintHue -=360;
+            }
+            if (paintSat > 100){
+            paintSat = 100;
+            }
+            if (paintBright > 100){
+            paintBright =100;
+            }
+            r.noStroke();
+            r.fill(paintHue,paintSat,paintBright,alphaSlider.value());
+            r.ellipse(x,y,size,size);
+            }
+        
+        if(revents[6]===1){
+            let r1=r.random(1);
+            let probability = r1;
+            let r2 = r.random(1);
+            if (r2>probability){
+                a=r1;
+            }           
+            let index = r.int(a*randomCounts.length);
+            randomCounts[index]++;
+            r.stroke(0);
+            r.strokeWeight(2);
+            r.fill(190);
+            let w = r.width /randomCounts.length;
+            for(let x = 0;x<randomCounts.length;x++){
+            r.rect(x * w,r.height - randomCounts[x],w -1,randomCounts[x]);
+        }
+    }
+    if (revents[7]===1){
+        let x =r.map(r.noise(tx),0,1,0,640);
+        let y =r.map(r.noise(ty),0,1,0,250);
+        tx += 0.01;
+        ty += 0.01;
+        r.stroke(0);
+        r.point(x,y);
+    }
+    if (revents[8]===1){
+        r.background(97);
+        let xoff =t;
+        r.noFill();
+        r.stroke(0);
+        r.strokeWeight(2);
+        r.beginShape();
+        for (let i = 0;i<r.width;i++){
+        let y = r.noise(xoff) * r.height;
+        xoff += 0.01;
+        r.vertex(i,y);
+    }
+        r.endShape();
+    t += 0.01;
+    }
+    if (revents[9]===1){
+         if (generatemarble){
+            r.loadPixels();
+            let xoff=0.0;
+            for(let x=0;x<r.width;x++){
+            let yoff=0.0;
+            for(let y=0;y<r.height;y++){
+            let bright=r.map(r.noise(xoff,yoff),0,1,0,100);
+            r.set(x,y,r.floor(bright));
+            yoff+=0.01;
+            }
+            xoff +=0.1;
+            }
+        r.updatePixels();
+        generatemarble=false;
+        }
+    }
+    if (revents[10]===1){
+        r.background(97);
+        r.translate(r.width/2,r.height);
+        yofset+=0.005;
+        r.randomSeed(seed);
+        branch(r,60,0);
+    }
+};
+function createControls(r,ypos){
     let xpos = 0;
-    Title=createP("Paint Splatter Simulation");
+    Title=r.createP("Paint Splatter Simulation");
     Title.position(xpos, ypos - 90);
     Title.style("font-size","14pt");
     Title.style("font-weight","bold");
     xpos += 220;
 
-    clearButton = createButton("clear");
+    clearButton =r.createButton("clear");
     clearButton.position(xpos,ypos - 70);
-    clearButton.mousePressed(clearButtonClicked);
+    clearButton.mousePressed(() => r.background(97));
+
+    newtreebutton = r.createButton("new tree");
+    newtreebutton.position(xpos-45,ypos-70);
+    newtreebutton.mousePressed(()=> newtree(r));
 
     xpos = 0;
-    spreadTitle = createP("Spread");
+    spreadTitle =r.createP("Spread");
     spreadTitle.position(xpos,ypos-45);
     xpos += 50;
 
-    spreadSlider = createSlider(0, 0.75, 0.25, 0);
+    spreadSlider =r.createSlider(0, 0.75, 0.25, 0);
     spreadSlider.position(xpos, ypos- 30);
     spreadSlider.size(80);
     xpos += 100;
 
-    sizeTitle = createP("size");
+    sizeTitle =r.createP("size");
     sizeTitle.position(xpos, ypos-45);
     xpos += 35;
 
-    sizeSlider = createSlider(5, 50, 20, 0);
+    sizeSlider =r.createSlider(5, 50, 20, 0);
     sizeSlider.position(xpos, ypos - 30);
     sizeSlider.size(80);
     xpos += 100;
 
-    sizespTitle = createP("Size Spread");
+    sizespTitle =r.createP("Size Spread");
     sizespTitle.position(xpos, ypos-45);
     xpos += 80;
 
-    sizespSlider = createSlider(0,0.1,0.01,0);
+    sizespSlider =r.createSlider(0,0.1,0.01,0);
     sizespSlider.position(xpos, ypos -30);
     sizespSlider.size(80);
     xpos += 100;
 
     xpos = 0;
-    baseHueTitle = createP("Base Hue");
+    baseHueTitle =r.createP("Base Hue");
     baseHueTitle.position(xpos, ypos - 15);
     xpos += 70;
 
-    baseHueSlider = createSlider(0, 360, 250, 0);
+    baseHueSlider =r.createSlider(0, 360, 250, 0);
     baseHueSlider.position(xpos,ypos );
     baseHueSlider.size(80);
     xpos += 100;
 
-    huespTitle = createP("Hue Spread");
+    huespTitle =r.createP("Hue Spread");
     huespTitle.position(xpos,ypos - 15);
     xpos+=80;
 
-    huespSlider = createSlider(0,100,15,0);
+    huespSlider =r.createSlider(0,100,15,0);
     huespSlider.position(xpos, ypos );
     huespSlider.size(80);
     xpos += 100;
 
-    alphaTitle = createP("Transparency");
+    alphaTitle =r.createP("Transparency");
     alphaTitle.position(xpos,ypos - 15);
     xpos += 90;
 
-    alphaSlider = createSlider(0, 1, 0.75, 0);
+    alphaSlider =r.createSlider(0, 1, 0.75, 0);
     alphaSlider.position(xpos,ypos );
     alphaSlider.size(80);
     xpos += 100;
 }
-
-*/function clearButtonClicked(){
-    background(97);
-}/*
-function branch(h,xoff){
-let sw = map(h,2,100,1,5 );
-strokeWeight(sw);
-line(0,0,0,-h);
-translate(0,-h);
-h*=0.7;
-xoff +=0.1;
-if(h>4){
-    let n =floor(random(1,5));
+    function branch(r,h,xoff){
+    let sw = r.map(h,2,100,1,5 );
+    r.strokeWeight(sw);
+    r.line(0,0,0,-h);
+    r.translate(0,-h);
+    h*=0.7;
+    xoff +=0.1;
+    if(h>4){
+    let n =r.floor(r.random(1,5));
     for(let i = 0; i<n;i++)
-    {let theta=(noise(xoff+i,yofset)-0.5)*PI;
+    {let theta=(r.noise(xoff+i,yofset)-0.5)*r.PI;
         if (n%2 == 0) theta*= -1;
-        push();
-        rotate(theta);
-        branch(h, xoff);
-        pop(); 
+        r.push();
+        r.rotate(theta);
+        branch(r, h, xoff);
+        r.pop(); 
     }
 }
 }
-
-
+function newtree(){
+yofset=r.random(1000);
+seed=r.millis();
 }
-class walk{
-    constructor(){
-        this.x=width/2;
-        this.y=height/2;
-        this.tx =0;
-        this.ty=10000;
-}
-show(){
-    stroke(0);
-    point(this.x,this.y);
-}
-step(){
-    let choicex= floor(random(3))-1;
-    let choicey= floor(random(3))-1;
-    this.x+=choicex;
-    this.y+=choicey;}
-
-step_2(){this.x = map(noise(this.tx),0,1,0,width);
-    this.y =map(noise(this.ty),0,1,0,height);
-    this.tx += 0.01;
-    this.ty +=0.01;}
-
-step_1(){
-let choicex=randomGaussian(0,3);
-let choicey=randomGaussian(0,3);
-this.x+=choicex;
-this.y+=choicey;
-}
-follow(){
-    let a=mouseX-this.x;
-    let b=mouseY-this.y;
-    let ran=floor(random(100));
-    let c,d;
-    if (ran<44){
-    if (a>0){
-        c=1;
-    }else if (a<0){
-        c=-1;
-    }else{c=0;}
-    if (b>0){
-        d=1;
-    }else if (b<0){
-        d=-1;
-    }else{d=0;}
-    this.x+=c;
-    this.y+=d;
-    }else
-        {this.step();}}}
-
-    else if(events[11]===1){
-    if(!flowFieldInitialized){
-    flowfield = new FlowField(20);
-    for(let i=0; i<120;i++){
-      vehicles.push(new vehicle(random(width),random(height),random(2,5),random(0.1,0.5)));
-    }
-flowFieldInitialized=true;}
-    if (debug) flowfield.display();
-    for(let i=0;i<vehicles.length;i++){
-        vehicles[i].follow(flowfield);
-        vehicles[i].run();
-    }
-    
+    };
 
 
-}    */
     let vevents=[];
     const vmode={
         ball:1,
@@ -434,7 +308,7 @@ flowFieldInitialized=true;}
     let debug = true;
     let flowfield;
     let vehicles = [];
-    function setMode(index){
+    function setvMode(index){
         vevents.fill(0);
         vevents[index] = 1;
         if (lvector) lvector.background(255);
@@ -458,7 +332,7 @@ flowFieldInitialized=true;}
         }
     }
     for (const [id,index] of Object.entries(vmode)){
-        document.getElementById(id).addEventListener('click',() => setMode(index));
+        document.getElementById(id).addEventListener('click',() => setvMode(index));
     }
     const vector = (p) => {
         p.setup = () => {
@@ -717,4 +591,5 @@ function make2DArray(cols,rows){
     return array;
 }
 }; 
+const lrandom = new p5(random,'random');
 const lvector = new p5(vector, 'vector');
