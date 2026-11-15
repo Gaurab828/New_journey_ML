@@ -1,4 +1,4 @@
-let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlider;let alphaSlider;let walker;let land;let theta = 0.0;let randomCounts = [];let t = 0.0;let events=[1];let yofset=5;let seed=5;let gentree;let debug = true;let flowfield;let vehicles=[];let flowFieldInitialized = false;
+/*let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlider;let alphaSlider;let walker;let land;let theta = 0.0;let randomCounts = [];let t = 0.0;let events=[1];let yofset=5;let seed=5;let gentree;let debug = true;let flowfield;let vehicles=[];let flowFieldInitialized = false;
 const button_walker=document.getElementById("random_walker");
 button_walker.addEventListener('click',set_rwalker);
 function set_rwalker(){
@@ -129,11 +129,12 @@ if (events[4]===1){
     if (!spreadSlider){createControls(300);}
     Title.show();clearButton.show();spreadTitle.show();spreadSlider.show();sizeTitle.show();sizeSlider.show();sizespTitle.show();sizespSlider.show();baseHueTitle.show();baseHueSlider.show();huespTitle.show();huespSlider.show();alphaTitle.show();alphaSlider.show();}
     else{if (spreadSlider){Title.hide();clearButton.hide();spreadTitle.hide();spreadSlider.hide();sizeTitle.hide();sizeSlider.hide();sizespTitle.hide();sizespSlider.hide();baseHueTitle.hide();baseHueSlider.hide();huespTitle.hide();huespSlider.hide();alphaTitle.hide();alphaSlider.hide();}}
-if (events[10]===1){if(!newtreeButton)newtreeButton.show();}
-else {if(newtreeButton)newtreeButton.hide();}}
+if (events[10]===1){if(gentree)newtreeButton.show();}
+else {if(!gentree)newtreeButton.hide();}}
 
 function setup(){
-    createCanvas(640,250);
+    let canvas=createCanvas(640,250);
+    canvas.parent("canvas_holder");
     walker=new walk();
     colorMode(HSB);
     background(97);
@@ -141,6 +142,7 @@ function setup(){
       randomCounts[i] = 0;}
     }
 function draw(){
+    if (events[10]!=1) gentree=false;
     if (events[0]===1){
     walker.step();
     walker.show();}
@@ -211,7 +213,7 @@ else if(events[10]===1){
     yofset+=0.005;
     randomSeed(seed);
     branch(60,0);
-    gentree=false;
+    gentree=true;
 }
 else if(events[11]===1){
     if(!flowFieldInitialized){
@@ -335,9 +337,9 @@ function createControls(ypos){
     xpos += 100;
 }
 
-function clearButtonClicked(){
+*/function clearButtonClicked(){
     background(97);
-}
+}/*
 function branch(h,xoff){
 let sw = map(h,2,100,1,5 );
 strokeWeight(sw);
@@ -522,3 +524,43 @@ function setwind(){
     clearButtonClicked();
     events[11]=1;
     slider();}*/
+    //vector starting
+    let vevents=[];
+    const vmode={
+        ball:1
+    };
+    let x = 100;
+    let y = 100;
+    let xspeed = 3;
+    let yspeed =2;
+    function setMode(index){
+        vevents.fill(0);
+        vevents[index] = 1;
+        background(255);
+    }
+    for (const [id,index] of Object.entries(vmode)){
+        document.getElementById(id).addEventListener('click',() => setMode(index));
+    }
+    const vector = (p) => {
+        p.setup = () => {
+            p.createCanvas(640,250);
+            p.background(255);
+        };
+    p.draw =() => {
+        if (vevents[1]===1){
+        p.background(255);
+        x = x + xspeed;
+        y = y + yspeed;
+        if(x>p.width-25 || x < 25){
+            xspeed = xspeed * -1;
+        }
+        if (y>p.height-25 || y<25){
+            yspeed = yspeed * -1;
+        }
+        p.stroke(0);
+        p.fill(99);
+        p.strokeWeight(2);
+        p.circle(x,y,48);}
+    }; 
+}; 
+new p5(vector, 'vector');
