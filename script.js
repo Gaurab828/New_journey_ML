@@ -527,16 +527,16 @@ function setwind(){
     //vector starting
     let vevents=[];
     const vmode={
-        ball:1
+        ball:1,
+        vectorsub:2,
+        func:3
     };
-    let x = 100;
-    let y = 100;
-    let xspeed = 3;
-    let yspeed =2;
+    let position;
+    let velocity;
     function setMode(index){
         vevents.fill(0);
         vevents[index] = 1;
-        background(255);
+        if (lvector) lvector.background(255);
     }
     for (const [id,index] of Object.entries(vmode)){
         document.getElementById(id).addEventListener('click',() => setMode(index));
@@ -545,22 +545,59 @@ function setwind(){
         p.setup = () => {
             p.createCanvas(640,250);
             p.background(255);
+            position=p.createVector(100,100);
+            velocity=p.createVector(3,2);
         };
     p.draw =() => {
         if (vevents[1]===1){
         p.background(255);
-        x = x + xspeed;
-        y = y + yspeed;
-        if(x>p.width-25 || x < 25){
-            xspeed = xspeed * -1;
+        position.add(velocity);
+        if(position.x>p.width-25 || position.x < 25){
+            velocity.x = velocity.x * -1;
         }
-        if (y>p.height-25 || y<25){
-            yspeed = yspeed * -1;
+        if (position.y>p.height-25 || position.y<25){
+            velocity.y = velocity.y * -1;
         }
         p.stroke(0);
         p.fill(99);
         p.strokeWeight(2);
-        p.circle(x,y,48);}
+        p.circle(position.x,position.y,48);}
+
+        if (vevents[2]===1){
+            p.background(255);
+            let mouse = p.createVector(p.mouseX, p.mouseY);
+            let center = p.createVector(p.width/2, p.height/2);
+            p.strokeWeight(4);
+            p.stroke(200);
+            p.line(0, 0, mouse.x, mouse.y);
+            p.line(0,0,center.x, center.y);
+            mouse.sub(center);
+            p.stroke(0);
+            p.translate(p.width/2,p.height/2);
+            p.line(0,0,mouse.x,mouse.y);
+        }
+        if (vevents[3]===1){
+            p.background(255);
+            let mouse = p.createVector(p.mouseX, p.mouseY);
+            let center = p.createVector(p.width/2, p.height/2);
+            mouse.sub(center);
+            const m= mouse.mag();
+            p.fill(0);
+            p.rect(10,10,m,10);
+            p.translate(p.width/2,p.height/2);
+            p.strokeWeight(2);
+            p.stroke(200);
+            p.line(0, 0, mouse.x,mouse.y);
+            mouse.mult(0.5);
+            p.stroke(97);
+            p.strokeWeight(4);
+            p.line(0,0,mouse.x,mouse.y);
+            mouse.normalize();
+            mouse.mult(15);
+            p.stroke(0);
+            p.strokeWeight(8);
+            p.line(0,0,mouse.x,mouse.y);
+        }
     }; 
 }; 
-new p5(vector, 'vector');
+const lvector = new p5(vector, 'vector');
