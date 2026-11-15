@@ -1,4 +1,4 @@
-/*let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlider;let alphaSlider;let walker;let land;let theta = 0.0;let randomCounts = [];let t = 0.0;let events=[1];let yofset=5;let seed=5;let gentree;let debug = true;let flowfield;let vehicles=[];let flowFieldInitialized = false;
+/*let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlider;let alphaSlider;let walker;let land;let theta = 0.0;let randomCounts = [];let t = 0.0;let events=[1];let yofset=5;let seed=5;let gentree;
 const button_walker=document.getElementById("random_walker");
 button_walker.addEventListener('click',set_rwalker);
 function set_rwalker(){
@@ -215,18 +215,7 @@ else if(events[10]===1){
     branch(60,0);
     gentree=true;
 }
-else if(events[11]===1){
-    if(!flowFieldInitialized){
-    flowfield = new FlowField(20);
-    for(let i=0; i<120;i++){
-      vehicles.push(new vehicle(random(width),random(height),random(2,5),random(0.1,0.5)));
-    }
-flowFieldInitialized=true;}
-    if (debug) flowfield.display();
-    for(let i=0;i<vehicles.length;i++){
-        vehicles[i].follow(flowfield);
-        vehicles[i].run();
-    }
+
 }
 else if(events[4]===1)
 {translate(width/2,height/2);
@@ -359,111 +348,8 @@ if(h>4){
     }
 }
 }
-function make2DArray(cols,rows){
-    let array = new Array(cols);
-    for(let i =0;i<array.length;i++){
-        array[i] = new Array(rows);
-    }
-    return array;
-}
-class FlowField{
-    constructor(r){
-        this.resolution = r;
-        this.cols = width / this.resolution;
-        this.rows = height / this.resolution;
-        this.field =make2DArray(this.cols,this.rows);
-        this.init();
-    }
-init(){
-    noiseSeed(random(10000));
-    let xoff =0;
-    for(let i=0;i< this.cols;i++){
-        let yoff =0;
-        for(let j =0;j<this.rows;j++){
-            let angle =map(noise(xoff,yoff),0,1,0,TWO_PI);
-            this.field[i][j]=p5.Vector.fromAngle(angle);
-            yoff += 0.1;
-        }
-        xoff += 0.1;
-    }
-}
-display(){
-    for(let i =0;i< this.cols; i++){
-        for(let j =0;j< this.rows; j++){
-            drawVector(this.field[i][j], i* this.resolution,j*this.resolution,
-                this.resolution-2);
-        }
-    }
-}
-lookup(lookup){
-    let column = constrain(floor(lookup.x / this.resolution),0,this.cols-1);
-    let row = constrain(floor(lookup.y / this.resolution), 0,this.rows -1);
-    return this.field[column][row].copy();
-}
-}
-function drawVector(v,x,y,scayl){
-    push();
-    let arrowsize = 4;
-    translate(x,y);
-    strokeWeight(1);
-    stroke(127);
-    rotate(v.heading());
-    let len = v.mag()*scayl;
-    line(0,0,len,0);
-    line(len,0,len-arrowsize,+arrowsize/2);
-    pop();
-}
-class vehicle{
-    constructor(x,y,ms,mf){
-        this.position = createVector(x,y);
-        this.acceleration = createVector(0,0);
-        this.velocity = createVector(0,0);
-        this.r =4;
-        this.maxspeed =ms || 4;
-        this.maxforce =mf || 0.1;
-    }
-run(){
-    this.update();
-    this.borders();
-    this.display();
-}
-follow(flow){
-    let desired =flow.lookup(this.position);
-    desired.mult(this.maxspeed);
-    let steer =p5.Vector.sub(desired,this.velocity);
-    steer.limit(this.maxforce);
-    this.applyForce(steer);
-}
-applyForce(force){
-    this.acceleration.add(force);
-}
-update(){
-    this.velocity.add(this.acceleration);
-    this.velocity.limit(this.maxspeed);
-    this.position.add(this.velocity);
-    this.acceleration.mult(0);
-}
-borders(){
-    if (this.position.x<-this.r) this.position.x=width+this.r;
-    if(this.position.y<-this.r) this.position.y=height +this.r;
-    if(this.position.x> width +this.r) this.position.x =-this.r;
-    if(this.position.y>height+this.r) this.position.y = - this.r;
-}
-display(){
-    let t = this.velocity.heading()+PI/2;
-    fill(127);
-    stroke(0);
-    strokeWeight(2);
-    push();
-    translate(this.position.x,this.position.y);
-    rotate(t);
-    beginShape();
-    vertex(0, -this.r*2);
-    vertex(-this.r,this.r*2);
-    vertex(this.r, this.r*2);
-    endShape(CLOSE);
-    pop();
-}
+
+
 }
 class walk{
     constructor(){
@@ -513,28 +399,41 @@ follow(){
     this.y+=d;
     }else
         {this.step();}}}
-        /*const button_wind=document.getElementById("wind");
-button_wind.addEventListener('click',setwind);
-function setwind(){
-    for(let i=0;i<20;i++){
-        if(events[i]===0 && i!=11){
-            events[i]=0;
-        }
+
+    else if(events[11]===1){
+    if(!flowFieldInitialized){
+    flowfield = new FlowField(20);
+    for(let i=0; i<120;i++){
+      vehicles.push(new vehicle(random(width),random(height),random(2,5),random(0.1,0.5)));
     }
-    clearButtonClicked();
-    events[11]=1;
-    slider();}*/
-    //vector starting
+flowFieldInitialized=true;}
+    if (debug) flowfield.display();
+    for(let i=0;i<vehicles.length;i++){
+        vehicles[i].follow(flowfield);
+        vehicles[i].run();
+    }
+    
+
+
+}    */
     let vevents=[];
     const vmode={
         ball:1,
         vectorsub:2,
         func:3,
-        acceleration:4
+        acceleration:4,
+        ran_acc:5,
+        acc_tomouse:6,
+        fast_follow:7,
+        wind:8
     };
+    let timex,timey;
     let position;
     let velocity;
     let acceleration;
+    let debug = true;
+    let flowfield;
+    let vehicles = [];
     function setMode(index){
         vevents.fill(0);
         vevents[index] = 1;
@@ -543,9 +442,19 @@ function setwind(){
             position.set(100,100);
             velocity.set(3,2);
         }
-        if(index===4){
+        if(index===4 || index === 6 || index === 7){
             acceleration.set(-0.01,0.01);
             position.set(100,100);
+            velocity.set(0,0);
+        }
+        if(index===5){
+            position.set(320,125);
+            velocity.set(0,0);
+            timex=0;
+            timey=1000;
+        }
+        if(index===8){
+            flowfield.init();
         }
     }
     for (const [id,index] of Object.entries(vmode)){
@@ -557,7 +466,15 @@ function setwind(){
             p.background(255);
             position=p.createVector(100,100); 
             velocity=p.createVector(0,0);
-            acceleration=p.createVector(0,0);          
+            acceleration=p.createVector(0,0);
+            flowfield = new FlowField(p,20);
+            for (let i = 0; i < 120; i++){
+                vehicles.push(
+                    new Vehicle(
+                        p, p.random(p.width),p.random(p.height),p.random(2,5),p.random(0.1,0.5)
+                    )
+                );
+            }          
         };
     p.draw =() => {
         if (vevents[1]===1){
@@ -627,6 +544,177 @@ function setwind(){
         p.strokeWeight(2);
         p.circle(position.x,position.y,48);
         }
-    }; 
+        if(vevents[5]===1){
+            p.background(255);
+            acceleration.set(p.map(p.noise(timex),0,1,-1,1),p.map(p.noise(timey),0,1,-1,1));
+            timex+=0.01;
+            timey+=0.01;
+            acceleration.mult(p.random(0.98));
+            velocity.add(acceleration);
+            position.add(velocity);
+            velocity.limit(5);
+            if (position.x>p.width+25){
+                position.x=-25;
+            }else if(position.x<-25){
+                position.x = p.width+25;
+            }
+            if (position.y>p.height+25){
+                position.y =-25;
+            }else if(position.y<-25){
+                position.y = p.height+25; 
+            }
+            p.stroke(0);
+            p.strokeWeight(2);
+            p.fill(109);
+            p.circle(position.x,position.y,48);
+        }
+        if(vevents[6]===1){
+            p.background(255);
+            let mouse = p.createVector(p.mouseX,p.mouseY);
+            let acc=mouse;
+            acc.sub(position);
+            acc.normalize();
+            acc.mult(0.2);
+            velocity.add(acc);
+            velocity.limit(5);
+            position.add(velocity);
+            p.stroke(0);
+            p.strokeWeight(2);
+            p.fill(127);
+            p.circle(position.x, position.y, 48);
+        }
+        if(vevents[7]===1){
+           p.background(255);
+            let mouse = p.createVector(p.mouseX,p.mouseY);
+            let acc=mouse;
+            acc.sub(position);
+            let magnitude = p.map(acc.mag(),0,p.max(p.width,p.height),0, 0.2);
+            acc.normalize();
+            acc.mult(magnitude);
+            velocity.add(acc);
+            velocity.limit(8);
+            position.add(velocity);
+            p.stroke(0);
+            p.strokeWeight(2);
+            p.fill(127);
+            p.circle(position.x, position.y, 48); }
+        if(vevents[8]===1){
+            p.background(255);
+            if(debug) flowfield.display();
+            for (let i=0; i < vehicles.length;i++){
+                vehicles[i].follow(flowfield);
+                vehicles[i].run();
+            }
+        }
+        
+    };
+class FlowField{
+constructor(p, r){
+        this.p = p;
+        this.resolution = r;
+        this.cols = this.p.floor(p.width / this.resolution);
+        this.rows = this.p.floor(p.height / this.resolution);
+        this.field =make2DArray(this.cols,this.rows);
+        this.init();
+    }
+init(){
+    this.p.noiseSeed(this.p.random(10000));
+    let xoff =0;
+    for(let i=0;i< this.cols;i++){
+        let yoff =0;
+        for(let j =0;j<this.rows;j++){
+            let angle =this.p.map(this.p.noise(xoff,yoff),0,1,0,this.p.TWO_PI);
+            this.field[i][j]=p5.Vector.fromAngle(angle);
+            yoff += 0.1;
+        }
+        xoff += 0.1;
+    }
+}
+display(){
+    for(let i =0;i< this.cols; i++){
+        for(let j =0;j< this.rows; j++){
+            drawVector(this.p,this.field[i][j], i* this.resolution,j*this.resolution,
+                this.resolution-2);
+        }
+    }
+}
+lookup(lookup){
+    let column = this.p.constrain(this.p.floor(lookup.x / this.resolution),0,this.cols-1);
+    let row = this.p.constrain(this.p.floor(lookup.y / this.resolution), 0,this.rows -1);
+    return this.field[column][row].copy();
+}
+}
+function drawVector(p,v,x,y,scayl){
+    p.push();
+    let arrowsize = 4;
+    p.translate(x,y);
+    p.strokeWeight(1);
+    p.stroke(127);
+    p.rotate(v.heading());
+    let len = v.mag()*scayl;
+    p.line(0,0,len,0);
+    p.line(len,0,len-arrowsize,+arrowsize/2);
+    p.pop();
+}
+
+class Vehicle{
+constructor(p,x,y,ms,mf){
+    this.p=p;
+    this.position = this.p.createVector(x,y);
+    this.acceleration = this.p.createVector(0,0);
+    this.velocity = this.p.createVector(0,0);
+    this.r =4;
+    this.maxspeed =ms || 4;
+    this.maxforce =mf || 0.1;
+    }
+run(){
+    this.update();
+    this.borders();
+    this.display();
+}
+follow(flow){
+    let desired =flow.lookup(this.position);
+    desired.mult(this.maxspeed);
+    let steer =p5.Vector.sub(desired,this.velocity);
+    steer.limit(this.maxforce);
+    this.applyForce(steer);
+}
+applyForce(force){
+    this.acceleration.add(force);
+}
+update(){
+    this.velocity.add(this.acceleration);
+    this.velocity.limit(this.maxspeed);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+}
+borders(){
+    if (this.position.x<-this.r) this.position.x=p.width+this.r;
+    if(this.position.y<-this.r) this.position.y=p.height +this.r;
+    if(this.position.x>p.width +this.r) this.position.x =-this.r;
+    if(this.position.y>p.height+this.r) this.position.y = - this.r;
+}
+display(){
+    let t = this.velocity.heading()+this.p.PI/2;
+    this.p.fill(127);
+    this.p.stroke(0);
+    this.p.strokeWeight(2);
+    this.p.push();
+    this.p.translate(this.position.x,this.position.y);
+    this.p.rotate(t);
+    this.p.beginShape();
+    this.p.vertex(0, -this.r*2);
+    this.p.vertex(-this.r,this.r*2);
+    this.p.vertex(this.r, this.r*2);
+    this.p.endShape(this.p.CLOSE);
+    this.p.pop();} 
+}
+function make2DArray(cols,rows){
+    let array = new Array(cols);
+    for(let i =0;i<array.length;i++){
+        array[i] = new Array(rows);
+    }
+    return array;
+}
 }; 
 const lvector = new p5(vector, 'vector');
