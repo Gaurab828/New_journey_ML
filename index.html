@@ -4,11 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ML_Journey</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/2.3.4/p5.min.js"></script>
-    <link rel="stylesheet" type="text/css" herf="style.css">
+    
 </head>
-<body>
-    <div id="random" align="center"></div>
+<body >
+    <header>
+        <div class="container">
+            <h1 class="logo">MLConcepts</h1>
+                <nav>
+                    <ul>
+                    <li><a href="#random">Random</a></li>
+                    <li><a href="#vector">Vector</a></li>
+                    </ul>
+                </nav>
+        </div>
+    </header>
+    <div class="container" id="random" align="center"></div>
    <!-- Creating a walker class that marks random direction out of 9 options.
 <br>Here is a walker which follows mouse 50 percent of the times.
 <br>using gaussian random to create circle pattern to see where most occupy.
@@ -26,7 +38,7 @@
 <button id="marble">image with noise</button>
 <button id="tree">tree</button>
 
-<div id="vector" align="center"></div>
+<div class="container" id="vector" align="center"></div>
 <button id="vectorsub">vector_sub</button>
 <button id="func">prop_of_vector</button>
 <button id="ball">bounching ball</button>
