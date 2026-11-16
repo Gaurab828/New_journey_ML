@@ -38,7 +38,7 @@ let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlid
     r.background(97);
     for (let i =0; i<15; i++){
         randomCounts[i] = 0;}
-    createControls(r,300);
+    createControls(r,400);
     r.updateControls();
     };
     r.updateControls = () =>{
@@ -52,16 +52,20 @@ let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlid
 
     r.draw = () =>{
         if (revents[1]===1){
+            let x1=x;
+            let y1=y;
             let choicex= r.floor(r.random(7))-3;
             let choicey= r.floor(r.random(7))-3;
             x+=choicex;
             y+=choicey;
             r.stroke(0);
-            r.point(x,y);
+            r.line(x1,y1,x,y);
         }
         if (revents[2]===1){
         let a=r.mouseX-x;
         let b=r.mouseY-y;
+        let x1=x;
+        let y1=y;
         let ran=r.floor(r.random(100));
         let c,d;
         if (ran<44){
@@ -78,12 +82,13 @@ let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlid
         x+=c;
         y+=d;
         }else
-        {let choicex= r.floor(r.random(7))-3;
-        let choicey= r.floor(r.random(7))-3;
+        {let choicex= r.floor(r.random(9))-4;
+        let choicey= r.floor(r.random(9))-4;
             x+=choicex;
-            y+=choicey;}
+            y+=choicey;
+            }
         r.stroke(0);
-        r.point(x,y);
+        r.line(x1,y1,x,y);
         }
         if(revents[3]===1){
             let x = r.randomGaussian(320,80);//320 is average and 60 is deviation.//for gaussian random circles.
@@ -92,12 +97,14 @@ let spreadSlider;let sizeSlider;let sizespSlider;let baseHueSlider;let huespSlid
             r.circle(x,120,18);
         }
         if(revents[4]===1){
-            let choicex=r.randomGaussian(0,3);
-            let choicey=r.randomGaussian(0,3);
+            let x1=x;
+            let y1=y;
+            let choicex=r.randomGaussian(0,4);
+            let choicey=r.randomGaussian(0,4);
             x+=choicex;
             y+=choicey;
             r.stroke(0);
-            r.point(x,y);
+            r.line(x1,y1,x,y);
         }
         if(revents[5]===1){
             r.translate(r.width/2,r.height/2);
@@ -214,7 +221,7 @@ function createControls(r,ypos){
     xpos += 50;
 
     spreadSlider =r.createSlider(0, 0.75, 0.25, 0);
-    spreadSlider.position(xpos, ypos- 30);
+    spreadSlider.position(xpos+15, ypos- 30);
     spreadSlider.size(80);
     xpos += 100;
 
@@ -223,7 +230,7 @@ function createControls(r,ypos){
     xpos += 35;
 
     sizeSlider =r.createSlider(5, 50, 20, 0);
-    sizeSlider.position(xpos, ypos - 30);
+    sizeSlider.position(xpos+15, ypos - 30);
     sizeSlider.size(80);
     xpos += 100;
 
@@ -232,7 +239,7 @@ function createControls(r,ypos){
     xpos += 80;
 
     sizespSlider =r.createSlider(0,0.1,0.01,0);
-    sizespSlider.position(xpos, ypos -30);
+    sizespSlider.position(xpos+15, ypos -30);
     sizespSlider.size(80);
     xpos += 100;
 
@@ -242,7 +249,7 @@ function createControls(r,ypos){
     xpos += 70;
 
     baseHueSlider =r.createSlider(0, 360, 250, 0);
-    baseHueSlider.position(xpos,ypos );
+    baseHueSlider.position(xpos+15,ypos );
     baseHueSlider.size(80);
     xpos += 100;
 
@@ -251,7 +258,7 @@ function createControls(r,ypos){
     xpos+=80;
 
     huespSlider =r.createSlider(0,100,15,0);
-    huespSlider.position(xpos, ypos );
+    huespSlider.position(xpos+15, ypos );
     huespSlider.size(80);
     xpos += 100;
 
@@ -260,7 +267,7 @@ function createControls(r,ypos){
     xpos += 90;
 
     alphaSlider =r.createSlider(0, 1, 0.75, 0);
-    alphaSlider.position(xpos,ypos );
+    alphaSlider.position(xpos+15,ypos );
     alphaSlider.size(80);
     xpos += 100;
 }
