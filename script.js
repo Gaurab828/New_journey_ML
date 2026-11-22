@@ -729,7 +729,8 @@ const zaxis = (k) => {
         balloon:1,
         accwind:2,
         mass:3,
-        friction:4
+        friction:4,
+        drag:5
     }
     let c=0.1;
     let Balloon;
@@ -738,9 +739,12 @@ const zaxis = (k) => {
     let heavyball;
     let slowball;
     let slowerball;
+    let dragballs=[];
+    let Liquid;
     function setfmode(index){
         fevents.fill(0);
         fevents[index]=1;
+        if (index===5 && lforce) lforce.reset();
     }
     for (const [id,index] of Object.entries(fmode)){
         document.getElementById(id).addEventListener('click',() => setfmode(index));
@@ -754,6 +758,8 @@ const zaxis = (k) => {
             Windball = new windball(f,320,30,3);
             slowball = new windball(f,360,30,3);
             slowerball=new windball(f, 200, 30, 6);
+            Liquid= new liquid(f ,0 , f.height/2, f.width, f.height/2, 0.1);
+            
         };
         f.draw = () =>{
             if(fevents[1]===1){
@@ -821,6 +827,21 @@ const zaxis = (k) => {
                 slowball.update();
                 slowball.bounceEdges();
                 slowball.show();  
+            }
+            else if(fevents[5]===1){
+                f.background(255);
+                Liquid.show();
+                for (let i = 0;i<dragballs.length;i++){
+                    if(Liquid.contains(dragballs[i])){
+                        let dragForce = Liquid.calculateDrag(dragballs[i]);
+                        dragballs[i].applyForce(dragForce);
+                    }
+                    let gravity = f.createVector(0, 0.1 * dragballs[i].mass);
+                    dragballs[i].applyForce(gravity);
+                    dragballs[i].update();
+                    dragballs[i].show();
+                    dragballs[i].bounceEdges();
+                }
             }
             else{f.background(255);}
         };
@@ -951,6 +972,42 @@ const zaxis = (k) => {
                 }
             }
         }
+        class liquid{
+            constructor(f, x, y, w, h, c){
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.c = c;
+            }
+        contains(dragballs){
+            let pos = dragballs.position;
+            return(
+                pos.x > this.x &&
+                pos.x < this.x + this.w &&
+                pos.y > this.y &&
+                pos.y < this.y + this.h
+            );
+        }
+        calculateDrag(dragballs){
+            let speed = dragballs.velocity.mag();
+            let dragMagnitude = this.c*speed*speed;
+            let dragForce = dragballs.velocity.copy();
+            dragForce.mult(-1);
+            dragForce.setMag(dragMagnitude);
+            return dragForce;
+        }
+        show(){
+            f.noStroke();
+            f.fill(220);
+            f.rect(this.x, this.y, this.w, this.h);
+        }
+        }
+        f.reset = () => {
+            for (let i=0; i<9 ; i++){
+                dragballs[i]= new windball(f , 40 + i*70, 0, f.random(1, 5));
+            }
+        };
     };
 const lforce = new p5(force,'force');
 const l3D = new p5(zaxis,'z');
