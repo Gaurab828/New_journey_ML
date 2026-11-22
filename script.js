@@ -731,7 +731,8 @@ const zaxis = (k) => {
         mass:3,
         friction:4,
         drag:5,
-        attractor:6
+        attractor:6,
+        galaxy:7
     }
     let c=0.1;
     let Balloon;
@@ -742,7 +743,9 @@ const zaxis = (k) => {
     let slowerball;
     let dragballs=[];
     let Liquid;
-    let Attractor
+    let Attractor;
+    let planets=[];
+    let sun;
     function setfmode(index){
         fevents.fill(0);
         fevents[index]=1;
@@ -762,6 +765,16 @@ const zaxis = (k) => {
             slowerball=new windball(f, 200, 30, 6);
             Liquid= new liquid(f ,0 , f.height/2, f.width, f.height/2, 0.1);
             Attractor = new attractor(f);
+            for(let i=0; i<25;i++){
+                let pos = p5.Vector.random2D();
+                let vel = pos.copy();
+                vel.setMag(f.random(5,10));
+                pos.setMag(f.random(100,150));
+                vel.rotate(f.PI/2);
+                let m = f.random(8,15);
+                planets[i]=new planet(f,pos.x,pos.y,vel.x,vel.y,m);
+            }
+            sun = new planet(f,0,0,0,0, 500);
         };
         f.draw = () =>{
             if(fevents[1]===1){
@@ -855,8 +868,25 @@ const zaxis = (k) => {
                     dragballs[i].update();
                     dragballs[i].show();
                 }
-            }
-            else{f.background(255);}
+                }
+            else if(fevents[7]===1){
+                f.background(255, 50);
+                f.translate(f.width/2,f.height/2);
+
+                for (let planet of planets){
+                    sun.attract(planet);
+                    for(let other of planets){
+                        if (planet!==other){
+                            planet.attract(other);
+                        }
+                    }
+                }
+                for(let planet of planets){
+                    planet.update();
+                    planet.show();
+                }
+                //sun.show blackhole attracting everything.
+            }else{f.background(255);}
         };
         class balloon{
             constructor(f,width,height){
@@ -1071,6 +1101,38 @@ const zaxis = (k) => {
                     this.position.x = mx + this.dragOffset.x;
                     this.position.y = my + this.dragOffset.y;
                 }
+            }
+        }
+        class planet{
+            constructor(f,x,y,vx,vy,m){
+                this.pos = f.createVector(x,y);
+                this.vel= f.createVector(vx,vy);
+                this.acc= f.createVector(0,0);
+                this.mass=m;
+                this.r=f.sqrt(this.mass)*1; 
+            }
+            applyForce(force){
+                let forcee=p5.Vector.div(force, this.mass);
+                this.acc.add(forcee);
+            }
+            attract(planet){
+                let force = p5.Vector.sub(this.pos,planet.pos);
+                let distanceSq = f.constrain(force.magSq(), 100, 1000);
+                let G=1;
+                let strength = (G*(this.mass*planet.mass))/distanceSq;
+                force.setMag(strength);
+                planet.applyForce(force);
+            }
+            update(){
+                this.vel.add(this.acc);
+                this.pos.add(this.vel);
+                this.acc.set(0,0);
+            }
+            show(){
+                f.stroke(0);
+                f.strokeWeight(2);
+                f.fill(0,100);
+                f.circle(this.pos.x, this.pos.y, this.r*2);
             }
         }
         f.mouseMoved = () => {
