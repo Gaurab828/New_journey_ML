@@ -308,13 +308,7 @@ seed=r.millis();
         fast_follow:7,
         wind:8
     };
-    let timex,timey;
-    let position;
-    let velocity;
-    let acceleration;
-    let debug = true;
-    let flowfield;
-    let vehicles = [];
+    let timex,timey;let position;let velocity;let acceleration;let debug = true;let flowfield;let vehicles = [];
     function setvMode(index){
         vevents.fill(0);
         vevents[index] = 1;
@@ -598,5 +592,90 @@ function make2DArray(cols,rows){
     return array;
 }
 }; 
+let zevents=[];
+let zmode={
+    terrain:1,
+    gravity:2
+}
+function setzmode(index){
+    zevents.fill(0);
+    zevents[index]=1;
+}
+for (const [id,index] of Object.entries(zmode)){
+    document.getElementById(id).addEventListener('click',() =>setzmode(index));
+}
+const zaxis = (k) => {
+    k.setup = () => {
+        k.createCanvas(640,250,k.WEBGL);
+        k.background(255);
+        k.pixelDensity(1);
+        land = new terrain(k, 20, 400, 400);
+        land.calculate();
+    };
+    k.draw = () => {
+        if (zevents[1]===1){
+        k.background(255);
+        k.push();
+        k.translate(0, 20, -200);
+        k.rotateX(k.PI/3);
+        k.rotateZ(theta);
+        land.render();
+        k.pop();
+        theta += 0.0025;}
+        else{
+            k.background(255);
+        }
+    };
+    function make2DArray(cols,rows){
+        let arr = new Array(cols);
+        for(let i = 0; i<arr.length; i++){
+            arr[i] = new Array(rows);
+        }
+        return arr;
+    }
+    class terrain{
+        constructor(k, s, w, h){
+            this.s=s;
+            this.w=w;
+            this.h=h;
+
+            this.cols = k.floor(w/s);
+            this.rows = k.floor(h/s);
+
+            this.z = make2DArray(this.cols,this.rows);
+            this.zoff = 0; 
+        }
+        calculate(){
+            let xoff = 0;
+            for (let i = 0;i<this.cols;i++){
+                let yoff = 0;
+                for(let j =0; j<this.rows; j++){
+                    this.z[i][j]=k.map(k.noise(xoff, yoff, this.zoff), 0, 1, -120, 120);
+                    yoff += 0.1;
+                }
+                xoff += 0.1;
+            }
+        }
+        render() {
+            k.noStroke();
+            for(let x=0; x<this.z.length -1; x++){
+                k.beginShape(k.QUAD_STRIP);
+                for (let y=0; y<this.z[x].length;y++){
+                    let currentElevation = this.z[x][y];
+                    let currentShade = (currentElevation + 120)*(255/240);
+                    k.fill(currentShade);
+
+                    let xCoordinate = x* this.s - this.w/2;
+                    let yCoordinate = y* this.s - this.h/2;
+                    
+                    k.vertex(xCoordinate, yCoordinate, this.z[x][y]);
+                    k.vertex(xCoordinate + this.s, yCoordinate, this.z[x+1][y]);
+                }
+                k.endShape();
+                }
+            }
+        }
+    };
+const l3D = new p5(zaxis,'z');
 const lrandom = new p5(random,'random');
 const lvector = new p5(vector, 'vector');
