@@ -724,6 +724,99 @@ const zaxis = (k) => {
             }
         }        
     };
+    let fevents=[];
+    let fmode={
+        balloon:1
+    }
+    let Balloon;
+    function setfmode(index){
+        fevents.fill(0);
+        fevents[index]=1;
+    }
+    for (const [id,index] of Object.entries(fmode)){
+        document.getElementById(id).addEventListener('click',() => setfmode(index));
+    }
+    const force = (f) => {
+        f.setup = () => {
+            f.createCanvas(640,250);
+            Balloon = new balloon(f, f.width, f.height);
+        };
+        f.draw = () =>{
+            if(fevents[1]===1){
+                f.background(255);
+                Balloon.update();
+                Balloon.show();
+            } 
+            else{f.background(255);}
+        };
+        class balloon{
+            constructor(f,width,height){
+                this.position = f.createVector(width/2,height/2);
+                this.velocity = f.createVector(0,0);
+                this.acceleration = f.createVector(0,0);
+                this.helium = f.createVector(0, -0.01);
+                this.noiseX = 1000;
+                this.topSpeed = 5;
+                this.diameter = height/5;
+                this.strokeWeight = 1;
+                this.triangleSize = 5;
+            }
+            applyForce(force){
+                this.acceleration.add(force);
+            }
+            shouldBounce(){
+                return this.position.y-this.diameter/2-this.strokeWeight<0;
+            }
+            update(){
+                if(this.shouldBounce()){
+                    this.position.y = this.diameter/2 - this.strokeWeight+2;
+                    this.velocity.y*= -0.75;
+                }
+                this.applyForce(this.helium);
+                let windX = f.map(f.noise(this.noiseX),0,1,-0.01,0.01);
+                let wind = f.createVector(windX, 0);
+                
+                this.applyForce(wind);
+                this.velocity.add(this.acceleration);
+                this.velocity.limit(this.topSpeed);
+                this.position.add(this.velocity);
+                this.checkSides();
+                this.acceleration.mult(0);
+                this.noiseX += 0.01;
+            }
+            checkSides(){
+                if(this.position.x > f.width){
+                    this.position.x = 0;
+                }
+                if(this.position.x < 0){
+                    this.position.x = f.width;
+                }
+            }
+            show(){
+                f.stroke(0);
+                f.strokeWeight(this.strokeWeight);
+                f.fill("lightgreen");
+                f.circle(this.position.x, this.position.y, this.diameter);
+
+                const ballonBottom = this.position.y + this.diameter/2;
+                f.triangle(
+                    this.position.x,
+                    ballonBottom,
+                    this.position.x + this.triangleSize,
+                    ballonBottom + this.triangleSize,
+                    this.position.x - this.triangleSize,
+                    ballonBottom + this.triangleSize 
+                );
+                f.line(
+                    this.position.x,
+                    ballonBottom + this.triangleSize,
+                    this.position.x,
+                    ballonBottom + this.triangleSize*20
+                );
+            }
+        }
+    };
+const lforce = new p5(force,'force');
 const l3D = new p5(zaxis,'z');
 const lrandom = new p5(random,'random');
 const lvector = new p5(vector, 'vector');
