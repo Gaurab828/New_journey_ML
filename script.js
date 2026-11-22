@@ -595,8 +595,10 @@ function make2DArray(cols,rows){
 let zevents=[];
 let zmode={
     terrain:1,
-    gravity:2
+    idlegas:2
 }
+let boxsize;
+let ball;
 function setzmode(index){
     zevents.fill(0);
     zevents[index]=1;
@@ -611,6 +613,8 @@ const zaxis = (k) => {
         k.pixelDensity(1);
         land = new terrain(k, 20, 400, 400);
         land.calculate();
+        boxsize= k.width/4;
+        ball = new ball(k,boxsize);
     };
     k.draw = () => {
         if (zevents[1]===1){
@@ -620,8 +624,20 @@ const zaxis = (k) => {
         k.rotateX(k.PI/3);
         k.rotateZ(theta);
         land.render();
+        k.orbitControl();
         k.pop();
         theta += 0.0025;}
+        else if(zevents[2]===1){
+            k.background(255);
+            k.orbitControl();
+            k.noFill();
+            k.rotateX(k.PI/3);
+            k.rotateY(k.PI/1.5);
+            k.box(boxsize);
+            ball.update();
+            ball.checkEdges();
+            ball.show();
+        }
         else{
             k.background(255);
         }
@@ -675,6 +691,38 @@ const zaxis = (k) => {
                 }
             }
         }
+        class ball{
+            constructor(k,boxsize){
+                this.boxsize =boxsize;
+                this.position = k.createVector(0,0,0);
+                this.velocity = k.createVector(2,5,6);
+                this.radius = 10;
+            }
+            update(){
+                this.position.add(this.velocity);
+            }
+            checkEdges(){
+              if (this.position.x>this.boxsize/2 - this.radius || this.position.x< -this.boxsize/2 +this. radius)
+                {
+                    this.velocity.x*=-1;
+                }  
+                if(this.position.y > this.boxsize/2 - this.radius || this.position.y < -this.boxsize/2 +this.radius)
+                {
+                    this.velocity.y*=-1;
+                }
+                if(this.position.z > this.boxsize/2 - this.radius || this.position.z < -this.boxsize/2 + this.radius)
+                {
+                    this.velocity.z*= -1;
+                }
+            }
+            show(){
+                k.push();
+                k.translate(this.position.x, this.position.y, this.position.z);
+                k.normalMaterial();
+                k.sphere(this.radius);
+                k.pop();
+            }
+        }        
     };
 const l3D = new p5(zaxis,'z');
 const lrandom = new p5(random,'random');
