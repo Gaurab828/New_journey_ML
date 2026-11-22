@@ -730,7 +730,8 @@ const zaxis = (k) => {
         accwind:2,
         mass:3,
         friction:4,
-        drag:5
+        drag:5,
+        attractor:6
     }
     let c=0.1;
     let Balloon;
@@ -741,10 +742,11 @@ const zaxis = (k) => {
     let slowerball;
     let dragballs=[];
     let Liquid;
+    let Attractor
     function setfmode(index){
         fevents.fill(0);
         fevents[index]=1;
-        if (index===5 && lforce) lforce.reset();
+        if (index===5 || index===6 && lforce) lforce.reset();
     }
     for (const [id,index] of Object.entries(fmode)){
         document.getElementById(id).addEventListener('click',() => setfmode(index));
@@ -759,7 +761,7 @@ const zaxis = (k) => {
             slowball = new windball(f,360,30,3);
             slowerball=new windball(f, 200, 30, 6);
             Liquid= new liquid(f ,0 , f.height/2, f.width, f.height/2, 0.1);
-            
+            Attractor = new attractor(f);
         };
         f.draw = () =>{
             if(fevents[1]===1){
@@ -841,6 +843,17 @@ const zaxis = (k) => {
                     dragballs[i].update();
                     dragballs[i].show();
                     dragballs[i].bounceEdges();
+                }
+            }
+            else if(fevents[6]===1){
+                f.background(255);
+                Attractor.show();
+
+                for(let i = 0;i < dragballs.length; i++){
+                    let force = Attractor.att(dragballs[i]);
+                    dragballs[i].applyForce(force);
+                    dragballs[i].update();
+                    dragballs[i].show();
                 }
             }
             else{f.background(255);}
@@ -1003,9 +1016,87 @@ const zaxis = (k) => {
             f.rect(this.x, this.y, this.w, this.h);
         }
         }
+        class attractor{
+            constructor(f){
+                this.position = f.createVector(f.width/2, f.height/2);
+                this.mass = 20;
+                this.G = 1;
+                this.dragOffset = f.createVector(0,0);
+                this.dragging = false;
+                this.rollover = false;
+            }
+            att(dragballs){
+                let force = f.createVector(0,0);
+                force =this.position.copy();
+                force.sub(dragballs.position);
+                let distance = force.mag();
+                distance = f.constrain(distance, 5, 20);
+                let strength = (this.G*this.mass*dragballs.mass)/(distance*distance);
+                force.setMag(strength);
+                return force;
+            }
+            show(){
+                f.strokeWeight(4);
+                f.stroke(0);
+                if (this.dragging){
+                    f.fill(50);
+                } else if(this.rollover){
+                    f.fill(100);
+                } else{
+                    f.fill(175,200);
+                }
+                f.circle(this.position.x, this.position.y, this.mass*2);
+            }
+            handlePress(mx,my){
+                let d= f.dist(mx,my,this.position.x,this.position.y);
+                if(d< this.mass){
+                    this.dragging = true;
+                    this.dragOffset.x = this.position.x - mx;
+                    this.dragOffset.y= this.position.y - my;
+                }
+            }
+            handleHover(mx,my){
+                let d = f.dist(mx,my,this.position.x,this.position.y);
+                if (d<this.mass){
+                    this.rollover = true;
+                }else{
+                    this.rollover = false;
+                }
+            }
+            stopDragging(){
+                this.dragging = false;
+            }
+            handleDrag(mx,my){
+                if(this.dragging){
+                    this.position.x = mx + this.dragOffset.x;
+                    this.position.y = my + this.dragOffset.y;
+                }
+            }
+        }
+        f.mouseMoved = () => {
+            if(fevents[6]===1) {Attractor.handleHover(f.mouseX,f.mouseY);}
+        };
+        f.mousePressed = () => {
+            if(fevents[6]===1){
+            Attractor.handlePress(f.mouseX,f.mouseY);
+            }};
+        f.mouseDragged =()=>{
+            if(fevents[6]===1){
+            Attractor.handleHover(f.mouseX, f.mouseY);
+            Attractor.handleDrag(f.mouseX, f.mouseY);
+            }};
+        f.mouseReleased =()=>{
+            Attractor.stopDragging();
+        };
         f.reset = () => {
-            for (let i=0; i<9 ; i++){
-                dragballs[i]= new windball(f , 40 + i*70, 0, f.random(1, 5));
+            if(fevents[5]===1){
+            for (let i=0; i<10 ; i++){
+                dragballs[i]= new windball(f , 40 + i*65, 0, f.random(1, 5));
+            }}
+            if(fevents[6]===1){
+                for(let i=0;i<10;i++){
+                    dragballs[i]= new windball(f,f.random(f.width),f.random(f.height),f.random(1,5));
+                }
             }
         };
     };
