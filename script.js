@@ -728,12 +728,16 @@ const zaxis = (k) => {
     let fmode={
         balloon:1,
         accwind:2,
-        mass:3
+        mass:3,
+        friction:4
     }
+    let c=0.1;
     let Balloon;
     let Windball;
     let lightball;
     let heavyball;
+    let slowball;
+    let slowerball;
     function setfmode(index){
         fevents.fill(0);
         fevents[index]=1;
@@ -745,9 +749,11 @@ const zaxis = (k) => {
         f.setup = () => {
             f.createCanvas(640,250);
             Balloon = new balloon(f, f.width, f.height);
-            lightball = new moving(200, 30, 10);
-            heavyball = new moving(400, 30, 10);
-            Windball = new windball(f);
+            lightball = new windball(f,200, 30, 3);
+            heavyball = new windball(f,400, 30, 6);
+            Windball = new windball(f,320,30,3);
+            slowball = new windball(f,360,30,3);
+            slowerball=new windball(f, 200, 30, 6);
         };
         f.draw = () =>{
             if(fevents[1]===1){
@@ -770,10 +776,10 @@ const zaxis = (k) => {
             else if(fevents[3]===1){
                 f.background(255);
                 let gravity = f.createVector(0, 0.1);
-                lightball.applyForce(gravity);
-                heavyball.applyForce(gravity);
+                lightball.applyGravity(gravity);
+                heavyball.applyGravity(gravity);
                 if(f.mouseIsPressed){
-                    let wind = createVector(0.1, 0);
+                    let wind = f.createVector(0.1, 0);
                     lightball.applyForce(wind);
                     heavyball.applyForce(wind);
                 }
@@ -784,6 +790,37 @@ const zaxis = (k) => {
                 heavyball.update();
                 heavyball.show();
                 heavyball.checkEdges();
+            }
+            else if(fevents[4]===1){
+                f.background(255);
+                let gravity = f.createVector(0,0.2);
+                slowball.applyGravity(gravity);
+                slowerball.applyGravity(gravity);
+                if(f.mouseIsPressed){
+                    let wind = f.createVector(0.3,0);
+                    slowball.applyForce(wind);
+                    slowerball.applyForce(wind);
+                }
+                if (slowball.contactEdge()){
+                    let friction = slowball.velocity.copy();
+                    friction.mult(-1);
+                    friction.setMag(c);
+                    slowball.applyfriction(friction);
+                }
+                if (slowerball.contactEdge()){
+                    let friction = slowerball.velocity.copy();
+                    friction.mult(-1);
+                    friction.setMag(c);
+                    slowerball.applyfriction(friction);
+                }
+                
+                slowerball.update();
+                slowerball.bounceEdges();
+                slowerball.show();
+
+                slowball.update();
+                slowball.bounceEdges();
+                slowball.show();  
             }
             else{f.background(255);}
         };
@@ -854,9 +891,10 @@ const zaxis = (k) => {
             }
         }
         class windball{
-            constructor(f){
-                this.mass = 1;
-                this.position = f.createVector(f.width/2,30);
+            constructor(f,x,y,m){
+                this.mass = m;
+                this.radius = f.floor(m^(1/2))*6;
+                this.position = f.createVector(x,y);
                 this.velocity = f.createVector(0,0);
                 this.acceleration = f.createVector(0,0);
             }
@@ -864,6 +902,12 @@ const zaxis = (k) => {
                 let frc = force.copy();
                 frc.div(this.mass);
                 this.acceleration.add(frc);
+            }
+            applyfriction(friction){
+                this.acceleration.add(friction);
+            }
+            applyGravity(gravity){
+                this.acceleration.add(gravity);
             }
             update(){
                 this.velocity.add(this.acceleration);
@@ -874,19 +918,36 @@ const zaxis = (k) => {
                 f.stroke(0);
                 f.strokeWeight(2);
                 f.fill(127,127);
-                f.ellipse(this.position.x, this.position.y, 48, 48);
+                f.circle(this.position.x, this.position.y, this.radius*2);
+            }
+            contactEdge(){
+                return(this.position.y>f.height - this.radius -1);
+            }
+            bounceEdges(){
+                let bounce = -0.95;
+                if (this.position.x > f.width - this.radius){
+                    this.position.x = f.width - this.radius;
+                    this.velocity.x *= bounce;
+                } else if(this.position.x < this.radius){
+                    this.position.x = this.radius;
+                    this.velocity.x *= bounce;
+                }
+                if (this.position.y > f.height - this.radius){
+                    this.position.y = f.height - this.radius;
+                    this.velocity.y *= bounce; 
+                }
             }
             checkEdges(){
-                if(this.position.x>f.width){
-                    this.position.x = f.width;
+                if(this.position.x>f.width-this.radius){
+                    this.position.x = f.width - this.radius;
                     this.velocity.x*=-1;
-                } else if (this.position.x<0){
+                } else if (this.position.x<this.radius){
                     this.velocity.x*=-1;
-                    this.position.x = 0;
+                    this.position.x = this.radius;
                 }
-                if (this.position.y>f.height){
+                if (this.position.y>f.height-this.radius){
                     this.velocity.y*=-1;
-                    this.position.y = f.height;
+                    this.position.y = f.height - this.radius;
                 }
             }
         }
