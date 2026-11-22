@@ -726,9 +726,14 @@ const zaxis = (k) => {
     };
     let fevents=[];
     let fmode={
-        balloon:1
+        balloon:1,
+        accwind:2,
+        mass:3
     }
     let Balloon;
+    let Windball;
+    let lightball;
+    let heavyball;
     function setfmode(index){
         fevents.fill(0);
         fevents[index]=1;
@@ -740,6 +745,9 @@ const zaxis = (k) => {
         f.setup = () => {
             f.createCanvas(640,250);
             Balloon = new balloon(f, f.width, f.height);
+            lightball = new moving(200, 30, 10);
+            heavyball = new moving(400, 30, 10);
+            Windball = new windball(f);
         };
         f.draw = () =>{
             if(fevents[1]===1){
@@ -747,6 +755,36 @@ const zaxis = (k) => {
                 Balloon.update();
                 Balloon.show();
             } 
+            else if(fevents[2]===1){
+                f.background(255);
+                let gravity = f.createVector(0,0.1);
+                Windball.applyForce(gravity);
+                if(f.mouseIsPressed){
+                    let wind = f.createVector(0.1,0);
+                    Windball.applyForce(wind);
+                }
+                Windball.update();
+                Windball.show();
+                Windball.checkEdges();
+            }
+            else if(fevents[3]===1){
+                f.background(255);
+                let gravity = f.createVector(0, 0.1);
+                lightball.applyForce(gravity);
+                heavyball.applyForce(gravity);
+                if(f.mouseIsPressed){
+                    let wind = createVector(0.1, 0);
+                    lightball.applyForce(wind);
+                    heavyball.applyForce(wind);
+                }
+                lightball.update();
+                lightball.show();
+                lightball.checkEdges();
+
+                heavyball.update();
+                heavyball.show();
+                heavyball.checkEdges();
+            }
             else{f.background(255);}
         };
         class balloon{
@@ -813,6 +851,43 @@ const zaxis = (k) => {
                     this.position.x,
                     ballonBottom + this.triangleSize*20
                 );
+            }
+        }
+        class windball{
+            constructor(f){
+                this.mass = 1;
+                this.position = f.createVector(f.width/2,30);
+                this.velocity = f.createVector(0,0);
+                this.acceleration = f.createVector(0,0);
+            }
+            applyForce(force){
+                let frc = force.copy();
+                frc.div(this.mass);
+                this.acceleration.add(frc);
+            }
+            update(){
+                this.velocity.add(this.acceleration);
+                this.position.add(this.velocity);
+                this.acceleration.mult(0);
+            }
+            show(){
+                f.stroke(0);
+                f.strokeWeight(2);
+                f.fill(127,127);
+                f.ellipse(this.position.x, this.position.y, 48, 48);
+            }
+            checkEdges(){
+                if(this.position.x>f.width){
+                    this.position.x = f.width;
+                    this.velocity.x*=-1;
+                } else if (this.position.x<0){
+                    this.velocity.x*=-1;
+                    this.position.x = 0;
+                }
+                if (this.position.y>f.height){
+                    this.velocity.y*=-1;
+                    this.position.y = f.height;
+                }
             }
         }
     };
