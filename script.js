@@ -1182,6 +1182,7 @@ function setcmode(index){
     cevents.fill(0);
     cevents[index]=1;
     theta=0;
+    if(lrotate) lrotate.background(255);
 }
 for(const[id,index] of Object.entries(cmode)){
     document.getElementById(id).addEventListener('click',() => setcmode(index));
