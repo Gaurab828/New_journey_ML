@@ -1169,12 +1169,14 @@ let cmode={
     facing_mouse:2,
     conversion:3,
     spiral:4,
-    SHM:5
+    SHM:5,
+    ship:6
 };
 let angularacc=0.0001;
 let angularvelocity=0.01;
 let rectangle;
 let r;
+let ship;
 let h;
 function setcmode(index){
     cevents.fill(0);
@@ -1191,6 +1193,7 @@ const circular = (c) =>{
         rectangle=new mover(c);
         r=c.height*0.25;
         h=0.01;
+        ship= new spaceship(c);
     };
     c.draw =()=> {
         if(cevents[1]===1){
@@ -1245,6 +1248,14 @@ const circular = (c) =>{
         c.translate(c.width/2,c.height/2);
         c.line(0,0,0,y);
         c.circle(0,y,12);
+    }else if(cevents[6]===1){
+        c.background(255);
+        ship.update();
+        ship.warpEdges();
+        ship.show();
+        if(c.keyIsDown(c.LEFT_ARROW)) ship.turn(-0.03);
+        else if(c.keyIsDown(c.RIGHT_ARROW)) ship.turn(0.03);
+        if(c.keyIsDown(c.UP_ARROW)) ship.thrust();
     }
     else{c.background(255);}
 };
@@ -1276,6 +1287,68 @@ class mover{
         c.rotate(angle);
         c.rect(0,0,30,10);
         c.pop();
+    }
+}
+class spaceship{
+    constructor(c){
+        this.position = c.createVector(c.width/2,c.height/2);
+        this.velocity = c.createVector(0,0);
+        this.acceleration = c.createVector(0,0);
+        this.damping= 0.995;
+        this.topspeed=6;
+        this.heading=0;
+        this.r=16;
+        this.thrusting=false;
+    }
+    update(){
+        this.velocity.add(this.acceleration);
+        this.velocity.mult(this.damping);
+        this.velocity.limit(this.topspeed);
+        this.position.add(this.velocity);
+        this.acceleration.mult(0);
+    }
+    applyForce(force){
+        let f =force.copy();
+        this.acceleration.add(f);
+    }
+    turn(angle){
+        this.heading+=angle;
+    }
+    thrust(){
+        let angle = this.heading - c.PI/2;
+        let force = p5.Vector.fromAngle(angle);
+        force.mult(0.1);
+        this.applyForce(force);
+        this.thrusting = true;
+    }
+    warpEdges(){
+        let buffer = this.r*2;
+        if(this.position.x>c.width+buffer) this.position.x =-buffer;
+        else if(this.position.x<-buffer) this.position.x =c.width+buffer;
+        if(this.position.y>c.height+buffer) this.position.y =-buffer;
+        else if(this.position.y <-buffer) this.position.y = c.height + buffer;
+    }
+    show(){
+        c.stroke(0);
+        c.strokeWeight(2);
+        c.push();
+        c.translate(this.position.x, this.position.y + this.r);
+        c.rotate(this.heading);
+        c.fill(175);
+        if (this.thrusting) c.fill(255, 0, 0);
+        c.rectMode(c.CENTER);
+        c.rect(-this.r/2,this.r,this.r/3,this.r/2);
+        c.rect(this.r/2,this.r,this.r/3,this.r/2);
+        c.fill(175);
+        c.beginShape();
+        c.vertex(-this.r,this.r);
+        c.vertex(0,-this.r);
+        c.vertex(this.r,this.r);
+        c.endShape(c.CLOSE);
+        c.rectMode(c.CENTER);
+        c.pop();
+
+        this.thrusting=false;
     }
 }
 };
