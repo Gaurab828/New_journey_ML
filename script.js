@@ -1166,14 +1166,19 @@ let cevents= [];
 let angle = 0;
 let cmode={
     spining:1,
-    facing_mouse:2
+    facing_mouse:2,
+    conversion:3,
+    spiral:4,
 };
 let angularacc=0.0001;
 let angularvelocity=0.01;
 let rectangle;
+let r;
+let h;
 function setcmode(index){
     cevents.fill(0);
     cevents[index]=1;
+    theta=0;
 }
 for(const[id,index] of Object.entries(cmode)){
     document.getElementById(id).addEventListener('click',() => setcmode(index));
@@ -1183,6 +1188,8 @@ const circular = (c) =>{
     c.setup =()=> {
         c.createCanvas(640,250);
         rectangle=new mover(c);
+        r=c.height*0.25;
+        h=0.01;
     };
     c.draw =()=> {
         if(cevents[1]===1){
@@ -1206,6 +1213,26 @@ const circular = (c) =>{
         c.background(255);
         rectangle.update();
         rectangle.show();
+    }else if(cevents[3]===1){
+        c.background(255);
+        c.translate(c.width/2,c.height/2);
+        let x = r*c.cos(theta);
+        let y = r*c.sin(theta);
+        //changing with x and y instead of rotating x = r*cos(theta) and y = r*sin(theta) is needed.
+        c.fill(127);
+        c.stroke(0);
+        c.strokeWeight(2);
+        c.line(0,0,x,y);
+        c.circle(x,y,24);
+        theta += 0.02;
+    }else if(cevents[4]===1){
+        let x = h*c.cos(theta);
+        let y = h*c.sin(theta);
+        c.noStroke();
+        c.fill(0);
+        c.circle(x+c.width/2,y+c.height/2,8);
+        theta -= 0.01;
+        h += 0.05;
     }
     else{c.background(255);}
 };
