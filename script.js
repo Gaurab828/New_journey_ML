@@ -1169,6 +1169,7 @@ let cmode={
     facing_mouse:2,
     conversion:3,
     spiral:4,
+    SHM:5
 };
 let angularacc=0.0001;
 let angularvelocity=0.01;
@@ -1233,6 +1234,17 @@ const circular = (c) =>{
         c.circle(x+c.width/2,y+c.height/2,8);
         theta -= 0.01;
         h += 0.05;
+    }else if(cevents[5]===1){
+        c.background(255);
+        let period =120;
+        let amplitude = 80;
+        let y = amplitude*c.sin((c.TWO_PI*c.frameCount)/period);
+        c.stroke(0);
+        c.strokeWeight(2);
+        c.fill(127);
+        c.translate(c.width/2,c.height/2);
+        c.line(0,0,0,y);
+        c.circle(0,y,12);
     }
     else{c.background(255);}
 };
