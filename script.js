@@ -1165,8 +1165,12 @@ const zaxis = (k) => {
 let cevents= [];
 let angle = 0;
 let cmode={
-    spining:1
+    spining:1,
+    facing_mouse:2
 };
+let angularacc=0.0001;
+let angularvelocity=0.01;
+let rectangle;
 function setcmode(index){
     cevents.fill(0);
     cevents[index]=1;
@@ -1178,6 +1182,7 @@ for(const[id,index] of Object.entries(cmode)){
 const circular = (c) =>{
     c.setup =()=> {
         c.createCanvas(640,250);
+        rectangle=new mover(c);
     };
     c.draw =()=> {
         if(cevents[1]===1){
@@ -1193,10 +1198,47 @@ const circular = (c) =>{
         c.fill(127);
         c.circle(25, 0, 16);
         c.circle(-25, 0, 16);
-        angle +=0.1;
+        if(c.mouseIsPressed){
+        angle +=angularvelocity/20;}
+        else{angle+=angularvelocity;}
+        if(angularvelocity<2) angularvelocity+=angularacc;
+    }else if(cevents[2]===1){
+        c.background(255);
+        rectangle.update();
+        rectangle.show();
     }
     else{c.background(255);}
 };
+class mover{
+    constructor(c){
+        this.position = c.createVector(c.width/2,c.height/2);
+        this.velocity = c.createVector(0,0);
+        this.acceleration = c.createVector(0,0);
+        this.topSpeed=5;
+    }
+    update(){
+        let mouse = c.createVector(c.mouseX,c.mouseY);
+        let dir = p5.Vector.sub(mouse, this.position);
+        dir.normalize();
+        dir.mult(0.5);
+        this.acceleration =dir.copy();
+        this.velocity.add(this.acceleration);
+        this.velocity.limit(this.topSpeed);
+        this.position.add(this.velocity);
+    }
+    show(){
+        //let angle = c.atan2(this.velocity.y/ this.velocity.x);
+        let angle = this.velocity.heading();
+        c.stroke(0);
+        c.fill(175);
+        c.push();
+        c.rectMode(c.CENTER);
+        c.translate(this.position.x,this.position.y);
+        c.rotate(angle);
+        c.rect(0,0,30,10);
+        c.pop();
+    }
+}
 };
 const lrandom = new p5(random,'random');
 const lvector = new p5(vector, 'vector');
