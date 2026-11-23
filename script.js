@@ -1162,7 +1162,44 @@ const zaxis = (k) => {
             }
         };
     };
-const lforce = new p5(force,'force');
-const l3D = new p5(zaxis,'z');
+let cevents= [];
+let angle = 0;
+let cmode={
+    spining:1
+};
+function setcmode(index){
+    cevents.fill(0);
+    cevents[index]=1;
+}
+for(const[id,index] of Object.entries(cmode)){
+    document.getElementById(id).addEventListener('click',() => setcmode(index));
+}
+
+const circular = (c) =>{
+    c.setup =()=> {
+        c.createCanvas(640,250);
+    };
+    c.draw =()=> {
+        if(cevents[1]===1){
+        c.background(255);
+        c.fill(127);
+        c.stroke(0);
+        c.rectMode(c.CENTER);
+        c.translate(c.width/2, c.height/2);
+        c.rotate(angle);
+        c.line(-25,0,25,0);
+        c.stroke(0);
+        c.strokeWeight(2);
+        c.fill(127);
+        c.circle(25, 0, 16);
+        c.circle(-25, 0, 16);
+        angle +=0.1;
+    }
+    else{c.background(255);}
+};
+};
 const lrandom = new p5(random,'random');
 const lvector = new p5(vector, 'vector');
+const l3D = new p5(zaxis,'z');
+const lforce = new p5(force,'force');
+const lrotate = new p5(circular,'rotate');
